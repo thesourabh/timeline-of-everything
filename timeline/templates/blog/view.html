@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ tl.timeline['title'] }}{% endblock %}</h1>
+    {% if g.user['id'] == tl.timeline['author_id'] %}
+        <a class="action" href="{{ url_for('blog.update', id=tl.timeline['id']) }}">Edit</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <article class="post">
+      <header>
+        <div>
+          <h1></h1>
+          <div class="about">by {{ tl.timeline['author_id'] }} on {{ tl.timeline['created'].strftime('%Y-%m-%d') }}</div>
+        </div>
+      </header>
+      <p class="body">{{ tl.timeline['summary'] }}</p>
+      <div id='timeline-embed' style="width: 100%; height: 600px"></div>
+      <!-- 3 -->
+      <script type="text/javascript">
+        var tjson = {title: {
+                        text: {
+                          headline: "{{ tl.timeline['title'] }}",
+                          text: "{{ tl.timeline['summary'] }}"
+                        }
+                      }, events: []};
+        {% for event in tl.events %}
+          var startDate = new Date("{{ event['startDate'] }}");
+          var event = {
+                        start_date: {month: startDate.getMonth(), 
+                        day: startDate.getDate(), year: 1900 + startDate.getYear()},
+                        text: {headline: "{{ event['title'] }}", text: "{{ event['title'] }}"}
+                      };
+          var endDateStr = "{{ event['endDate'] }}";
+          var endDate;
+          if (endDateStr !== 'None') {
+            endDate = new Date(endDateStr);
+            event.end_date = {
+                              month: endDate.getMonth(),
+                              day: endDate.getDate(),
+                              year: 1900 + endDate.getYear()
+                              };
+          }
+          tjson.events.push(event);
+        {% endfor %}
+        console.log(tjson);
+        var timeline_json = tjson;
+        var options = {
+          zoom_sequence: [0.1, 0.25, 0.5, 1, 2, 4, 8, 10],
+          scale_factor: 0.25
+        };
+        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
+      </script>
+    </article>
+{% endblock %}
