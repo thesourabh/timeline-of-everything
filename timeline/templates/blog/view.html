@@ -14,6 +14,14 @@
           <h1></h1>
           <div class="about">by {{ tl.timeline['author_id'] }} on {{ tl.timeline['created'].strftime('%Y-%m-%d') }}</div>
         </div>
+        <div class="action-bar">
+            <ul>
+                <li id="btn-add-event">Add Event</li>
+                {% with timeline_id=tl.timeline['id'] %}
+                    {% include 'blog/event-form.html' %}
+                {% endwith %}
+            </ul>
+        </div>
       </header>
       <p class="body">{{ tl.timeline['summary'] }}</p>
       <div id='timeline-embed' style="width: 100%; height: 600px"></div>

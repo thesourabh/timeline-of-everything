@@ -1,0 +1,76 @@
+<div id="modal-add-event" class="modal">
+    <div class="modal-content">
+        <span class="close" id="btn-close-modal">&times;</span>
+        <form id="form-add-event">
+            <label for="title">Title</label>
+            <input name="title" id="title" value="{{ request.form['title'] }}" required>
+            <label for="summary">Summary</label>
+            <textarea name="summary" id="summary">{{ request.form['summary'] }}</textarea>
+            {{ timeline_id }}
+            <div class="date-row">
+                <div class="date-container">
+                    <label for="start-date">Start Date</label>
+                    <input name="start-date" id="start-date" type="date">
+                </div>
+                <div class="date-container">
+                    <label for="end-date">Start Date</label>
+                    <input name="end-date" id="end-date" type="date">
+                </div>
+            </div>
+            <input type="submit" value="Save" id="btn-save-event">
+        </form>
+    </div>
+</div>
+          
+<script>
+  // Get the modal
+  let modal = document.getElementById('modal-add-event');
+  let open = document.getElementById("btn-add-event");
+  let close = document.getElementById("btn-close-modal");
+  let eventForm = document.getElementById("form-add-event");
+
+  // When the user clicks on the button, open the modal 
+  open.onclick = function () {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  close.onclick = function () {
+    modal.style.display = "none";
+  }
+
+  function sendEventData() {
+    let XHR = new XMLHttpRequest();
+    let FD = new FormData(eventForm);
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      if (event.target.responseText === "SUCCESS") {
+        eventForm.reset();
+        modal.style.display = "none";
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("POST", "/{{ timeline_id }}/create");
+
+    // The data sent is what the user provided in the form
+    XHR.send(FD);
+  }
+
+  eventForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    sendEventData();
+  });
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>

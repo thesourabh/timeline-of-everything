@@ -24,6 +24,7 @@ CREATE TABLE timeline (
 CREATE TABLE event (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
+    summary TEXT,
     startDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     endDate TIMESTAMP,
     location TEXT
@@ -40,8 +41,8 @@ INSERT INTO user values(1, 'admin', 'admin');
 INSERT INTO user values(2, 'sourabh', 'sourabh');
 
 INSERT INTO timeline values(1, 1, '2019-03-06 13:23:44', 'War of Independence', 'A war was fought for Independence.');
-INSERT INTO event values(1, "Declaration of Independence", '1776-07-04 12:00:00', '', 'Philadelphia');
-INSERT INTO event values(2, "Siege of Yorktown", '1781-09-28 12:00:00', '1781-10-19 12:00:00', 'Philadelphia');
+INSERT INTO event values(1, "Declaration of Independence", "Independence was declared", '1776-07-04 12:00:00', '', 'Philadelphia');
+INSERT INTO event values(2, "Siege of Yorktown", "Yorktown was under siege", '1781-09-28 12:00:00', '1781-10-19 12:00:00', 'Yorktown');
 
 INSERT INTO timeline_has values(1, 1);
 INSERT INTO timeline_has values(1, 2);

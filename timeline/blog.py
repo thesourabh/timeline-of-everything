@@ -6,6 +6,8 @@ from werkzeug.exceptions import abort
 from timeline.auth import login_required
 from timeline.db import get_db
 
+from datetime import datetime
+
 bp = Blueprint('blog', __name__)
 
 
@@ -129,3 +131,37 @@ def delete(id):
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
+
+@bp.route('/<int:id>/create', methods=('POST',))
+@login_required
+def create_event(id):
+    if request.method == 'POST':
+        try:
+            title = request.form['title']
+            summary = request.form['summary']
+            start_date = request.form['start-date'] + ' 12:00:00'
+            end_date = request.form['end-date'] + ' 12:00:00'
+            print(start_date)
+            error = None
+    
+            if error is not None:
+                flash(error)
+                return "Adding event failed"
+            else:
+                db = get_db()
+                t = db.execute(
+                    'INSERT INTO event (title, summary, startDate, endDate)'
+                    ' VALUES (?, ?, ?, ?)',
+                    (title, summary, start_date, end_date)
+                )
+                print(t.lastrowid)
+                t = db.execute(
+                    'INSERT INTO timeline_has (timeline_id, event_id)'
+                    ' VALUES (?, ?)',
+                    (id, t.lastrowid)
+                )
+                db.commit()
+                return "SUCCESS"
+        except Exception as e:
+            return e
+    return "Only POST requests supported"
