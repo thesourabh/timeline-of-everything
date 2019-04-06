@@ -45,6 +45,13 @@ def get_timeline(id):
 
     return tl
     
+def get_all_timelines():
+    db = get_db()
+    timelines = db.execute(
+        'SELECT id, title FROM timeline'
+    ).fetchall()
+    return timelines
+    
     
 def get_date(date):
     if date: 
@@ -141,8 +148,9 @@ def view(id):
     """Update a post if the current user is the author."""
     tl = get_timeline(id)
     timeline_json = json.dumps(make_timeline_json(tl))
+    timelines = get_all_timelines()
     print(timeline_json)
-    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json})
+    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'timelines': timelines})
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))

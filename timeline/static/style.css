@@ -130,6 +130,7 @@ nav ul li a, header .action {
 }
 
 .post .about {
+  margin-top: 10px;
   color: slategray;
   font-style: italic;
 }

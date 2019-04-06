@@ -19,16 +19,20 @@
     <article class="post">
       <header>
         <div>
-          <h1></h1>
-          <div class="about">by {{ tl.timeline['author_id'] }} on {{ tl.timeline['created'].strftime('%Y-%m-%d') }}</div>
-        </div>
         <div class="action-bar">
             <ul>
                 <li id="btn-add-event">Add Event</li>
                 {% with timeline_id=tl.timeline['id'] %}
                     {% include 'blog/event-form.html' %}
                 {% endwith %}
+                <li id="btn-merge">Compare/Merge</li>
+                {% with timeline_id=tl.timeline['id'] %}
+                    {% include 'blog/merge-modal.html' %}
+                {% endwith %}
             </ul>
+        </div>
+
+            <div class="about">by {{ tl.timeline['author_id'] }} on {{ tl.timeline['created'].strftime('%Y-%m-%d') }}</div>
         </div>
       </header>
       <p class="body">{{ tl.timeline['summary'] }}</p>

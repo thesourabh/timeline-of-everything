@@ -27,7 +27,7 @@
   let modal = document.getElementById('modal-add-event');
   let open = document.getElementById("btn-add-event");
   let close = document.getElementById("btn-close-modal");
-  let eventForm = document.getElementById("form-add-event");
+  let form = document.getElementById("form-add-event");
 
   // When the user clicks on the button, open the modal 
   open.onclick = function () {
@@ -41,12 +41,12 @@
 
   function sendEventData() {
     let XHR = new XMLHttpRequest();
-    let FD = new FormData(eventForm);
+    let FD = new FormData(form);
     // Define what happens on successful data submission
     XHR.addEventListener("load", function(event) {
       let response = event.target.responseText;
       if (response.startsWith("SUCCESS")) {
-        eventForm.reset();
+        form.reset();
         let event_json = JSON.parse(response.substring(7));
         timeline_json.events.push(event_json);
         modal.style.display = "none";
@@ -66,7 +66,7 @@
     XHR.send(FD);
   }
 
-  eventForm.addEventListener("submit", function (event) {
+  form.addEventListener("submit", function (event) {
     event.preventDefault();
     sendEventData();
   });
