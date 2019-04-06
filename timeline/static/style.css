@@ -3,7 +3,7 @@
   margin: 0;
 }
 html {
-  font-family: sans-serif;
+  font-family: Helvetica, sans-serif;
   height: 100%;
   width: 100%;
 }
@@ -14,13 +14,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: serif;
-  color: #377ba8;
+  color: #8e6339;
   margin: 1rem 0;
 }
 
 a {
-  color: #377ba8;
+  color: #aa7644;
 }
 
 hr {

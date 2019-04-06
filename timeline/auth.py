@@ -86,9 +86,9 @@ def login():
         ).fetchone()
 
         if user is None:
-            error = 'Incorrect username.USER'
+            error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password) and user['password'] != password:
-            error = 'Incorrect password.PASSWORD' + user['password'] + ':' + password + ';' + str(check_password_hash(user['password'], password))
+            error = 'Incorrect password.'
 
         if error is None:
             # store the user id in a new session and return to the index

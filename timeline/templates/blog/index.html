@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Timelines{% endblock %}</h1>
+  <h1>{% block title %}List of Timelines{% endblock %}</h1>
   {% if g.user %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
@@ -12,7 +12,7 @@
     <article class="post">
       <header>
         <div>
-          <h1>{{ tl['title'] }}</h1>
+          <h2>{{ tl['title'] }}</h2>
         </div>
         <a class="action" href="{{ url_for('blog.view', id=tl['id']) }}">View</a>
         {% if g.user['id'] == tl['author_id'] %}
