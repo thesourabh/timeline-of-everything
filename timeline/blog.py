@@ -94,6 +94,14 @@ def make_timeline_json(tl):
         js['events'].append(get_event(event))
     return js
 
+def create_timeline(title, summary, db):
+    t = db.execute(
+        'INSERT INTO timeline (title, summary, author_id)'
+        ' VALUES (?, ?, ?)',
+        (title, summary, g.user['id'])
+    )
+    return t
+
 
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
@@ -111,11 +119,7 @@ def create():
             flash(error)
         else:
             db = get_db()
-            t = db.execute(
-                'INSERT INTO timeline (title, summary, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, summary, g.user['id'])
-            )
+            t = create_timeline(title, summary, db)
             db.commit()
             return redirect(url_for('blog.view', id=t.lastrowid))
             
@@ -194,15 +198,39 @@ def create_event(id):
                     ' VALUES (?, ?, ?, ?)',
                     (title, summary, start_date, end_date)
                 )
-                print(t.lastrowid)
-                t = db.execute(
-                    'INSERT INTO timeline_has (timeline_id, event_id)'
-                    ' VALUES (?, ?)',
-                    (id, t.lastrowid)
-                )
+                t = add_event_to_timeline(id, t.lastrowid, db)
                 db.commit()
                 event_json = get_event(request.form)
                 return "SUCCESS" + json.dumps(event_json)
         except Exception as e:
             return e
     return "Only POST requests supported"
+    
+def add_event_to_timeline(timeline_id, event_id, db):
+    t = db.execute(
+        'INSERT INTO timeline_has (timeline_id, event_id)'
+        ' VALUES (?, ?)',
+        (timeline_id, event_id)
+    )
+    return t
+    
+
+@bp.route('/<int:id1>/merge/<int:id2>', methods=('GET',))
+@login_required
+def merge_timelines(id1, id2):
+    timeline1 = get_timeline(id1)
+    timeline2 = get_timeline(id2)
+    new_title = "Merge of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    db = get_db()
+    t = create_timeline(new_title, new_title, db)
+    new_timeline_id = t.lastrowid
+    events_to_add = set()
+    for event in timeline1['events']:
+        events_to_add.add(event['id'])
+    for event in timeline2['events']:
+        events_to_add.add(event['id'])
+    for event_id in events_to_add:
+        add_event_to_timeline(new_timeline_id, event_id, db)
+    db.commit()
+    return "SUCCESS" + url_for('blog.view', id=new_timeline_id)
+    

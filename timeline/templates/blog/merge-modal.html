@@ -23,7 +23,13 @@
 
   let timelines_list_ul = document.getElementById('timelines_list_ul');
   timelines_list.forEach(function (timeline) {
+    if (timeline.id === {{ timeline_id }}) {
+        return;
+    }
     let a = document.createElement("a");
+    a.onclick = function () {
+      sendMergeRequest(timeline.id);
+    };
     a.appendChild(document.createTextNode(timeline.title))
     let li = document.createElement("li");
     li.appendChild(a);
@@ -58,9 +64,31 @@
     }
   }
 
-  form_merge.addEventListener("submit", function (event) {
-    event.preventDefault();
-  });
+
+  function sendMergeRequest(id2) {
+    let XHR = new XMLHttpRequest();
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
+        form_merge.reset();
+        modal_merge.style.display = "none";
+        let new_timline_url = response.substring(7);
+        window.location.href = new_timline_url
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("GET", "/{{ timeline_id }}/merge/" + id2);
+
+    // The data sent is what the user provided in the form
+    XHR.send();
+  }
 
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function (event) {

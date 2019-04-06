@@ -237,7 +237,7 @@ input[type=submit] {
   background-position: 10px 12px;
   background-repeat: no-repeat;
   background-size: 17px;
-  width: calc(100% - 60px);
+  width: 100%;
   font-size: 16px;
   padding: 12px 20px 12px 40px;
   border: 1px solid #ddd;
