@@ -2,16 +2,23 @@
 <title>{% block title %}{% endblock %} - Timeline</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='tailwind.css') }}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
-<nav>
-  <a href="{{ url_for('index') }}" class="logo"></a>
-  <div class="search-bar ">
-    <input type="text" class="search-box border border-grey px-3 w-full">
-    <div class="search-button"></div>
+
+<nav class="bg-grey w-full block  flex-grow lg:flex lg:items-center lg:w-auto">
+  <a href="{{ url_for('index') }}" class=" block mx-auto  pl-2 lg:my-4  w-1/2 lg:inline-block lg:w-1/4 ">
+    <img src="../static/timeline_logo.png">
+  </a>
+  <!--Search Bar-->
+  <div class="flex  w-4/5 my-4 mx-auto lg:w-1/2  lg:pl-10 h-10 pl-2" >
+    <input type="text" class="border border-grey px-3 w-full" placeholder="Search">
+    <button class="border border-grey w-12 hover:bg-grey-light bg-white">
+        <i class="fa fa-search text-grey-dark"></i>
+    </button>
   </div>
-  <ul class="nav-options">
+  <ul class="flex lg:justify-end w-4/5 my-4 mx-auto lg:w-1/4  h-10 pl-2 ">
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
@@ -21,7 +28,7 @@
     {% endif %}
   </ul>
 </nav>
-<section class="content">
+<section class="content w-full">
   <header>
     {% block header %}{% endblock %}
   </header>
