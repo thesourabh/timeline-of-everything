@@ -77,6 +77,8 @@ def get_event(event):
     end_date = get_date(event['endDate'])
     if end_date:
         new_event['end_date'] = end_date
+    if 'image' in event.keys():
+        new_event['media'] = {'url': event['image'], 'thumbnail': event['image']}
     return new_event
 
     
