@@ -9,7 +9,7 @@
             <div class="date-row">
                 <div class="date-container">
                     <label for="start-date">Start Date</label>
-                    <input name="startDate" id="start-date" type="date" class="border border-grey border-1 border-solid">
+                    <input name="startDate" id="start-date" type="date" class="border border-grey border-1 border-solid" required>
                 </div>
                 <div class="date-container">
                     <label for="end-date">End Date</label>
@@ -78,4 +78,18 @@
       modal.style.display = "none";
     }
   }
+
+  let start = document.getElementById('start-date');
+  let end = document.getElementById('end-date');
+
+  start.addEventListener('change', function() {
+    if(start.value)
+      end.min = start.value;
+  }, false);
+
+  end.addEventListener('change', function() {
+    if(end.value)
+      start.max = end.value;
+  }, false);
+
 </script>
