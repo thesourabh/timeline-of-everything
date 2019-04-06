@@ -10,11 +10,11 @@
             <div class="date-row">
                 <div class="date-container">
                     <label for="start-date">Start Date</label>
-                    <input name="start-date" id="start-date" type="date">
+                    <input name="startDate" id="start-date" type="date">
                 </div>
                 <div class="date-container">
-                    <label for="end-date">Start Date</label>
-                    <input name="end-date" id="end-date" type="date">
+                    <label for="end-date">End Date</label>
+                    <input name="endDate" id="end-date" type="date">
                 </div>
             </div>
             <input type="submit" value="Save" id="btn-save-event">
@@ -44,9 +44,13 @@
     let FD = new FormData(eventForm);
     // Define what happens on successful data submission
     XHR.addEventListener("load", function(event) {
-      if (event.target.responseText === "SUCCESS") {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
         eventForm.reset();
+        let event_json = JSON.parse(response.substring(7));
+        timeline_json.events.push(event_json);
         modal.style.display = "none";
+        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
       }
     });
 

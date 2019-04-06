@@ -7,6 +7,7 @@ from timeline.auth import login_required
 from timeline.db import get_db
 
 from datetime import datetime
+import json
 
 bp = Blueprint('blog', __name__)
 
@@ -21,17 +22,9 @@ def index():
     return render_template('blog/index.html', timelines=timelines)
 
 
-def get_timeline(id, check_author=True):
-    """Get a timeline and its author by id.
-
-    Checks that the id exists and optionally that the current user is
-    the author.
-
+def get_timeline(id):
+    """Get a timeline by id.
     :param id: id of timeline to get
-    :param check_author: require the current user to be the author
-    :return: the timeline with author information
-    :raise 404: if a timeline with the given id doesn't exist
-    :raise 403: if the current user isn't the author
     """
     db = get_db()
     timeline = db.execute(
@@ -43,9 +36,6 @@ def get_timeline(id, check_author=True):
 
     if timeline is None:
         abort(404, "Timeline id {0} doesn't exist.".format(id))
-
-    # if check_author and timeline['author_id'] != g.user['id']:
-    #    abort(403)
         
     tl = {'timeline': timeline, 'events': []}
     events = db.execute(
@@ -54,6 +44,41 @@ def get_timeline(id, check_author=True):
     tl['events'] = events
 
     return tl
+    
+    
+def get_date(date):
+    if date: 
+        if isinstance(date, str):
+            date = datetime.strptime(date, '%Y-%m-%d')
+        d = date.date()
+        date_obj = {'year': d.year, 'month': d.year, 'day': d.day}
+        return date_obj
+    return None
+    
+def get_event(event):
+    new_event = {'text': {'headline': event['title'], 'text': event['summary']}}
+    start_date = get_date(event['startDate'])
+    if start_date:
+        new_event['start_date'] = start_date
+    end_date = get_date(event['endDate'])
+    if end_date:
+        new_event['end_date'] = end_date
+    return new_event
+
+    
+        
+def make_timeline_json(tl):
+    js = {'title': {
+             'text': {
+               'headline': tl['timeline']['title'],
+               'text': tl['timeline']['summary']
+             }
+           },
+           'events': []
+          };
+    for event in tl['events']:
+        js['events'].append(get_event(event))
+    return js
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -114,8 +139,10 @@ def update(id):
 @bp.route('/<int:id>/view', methods=('GET',))
 def view(id):
     """Update a post if the current user is the author."""
-    timeline = get_timeline(id)
-    return render_template('blog/view.html', tl=timeline)
+    tl = get_timeline(id)
+    timeline_json = json.dumps(make_timeline_json(tl))
+    print(timeline_json)
+    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json})
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
@@ -139,9 +166,8 @@ def create_event(id):
         try:
             title = request.form['title']
             summary = request.form['summary']
-            start_date = request.form['start-date'] + ' 12:00:00'
-            end_date = request.form['end-date'] + ' 12:00:00'
-            print(start_date)
+            start_date = request.form['startDate'] + ' 12:00:00'
+            end_date = request.form['endDate'] + ' 12:00:00' if request.form['endDate'] else ''
             error = None
     
             if error is not None:
@@ -161,7 +187,8 @@ def create_event(id):
                     (id, t.lastrowid)
                 )
                 db.commit()
-                return "SUCCESS"
+                event_json = get_event(request.form)
+                return "SUCCESS" + json.dumps(event_json)
         except Exception as e:
             return e
     return "Only POST requests supported"
