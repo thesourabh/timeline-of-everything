@@ -188,6 +188,7 @@ def create_event(id):
             summary = request.form['summary']
             start_date = request.form['startDate'] + ' 12:00:00'
             end_date = request.form['endDate'] + ' 12:00:00' if request.form['endDate'] else ''
+            image_url = request.form['image']
             error = None
     
             if error is not None:
@@ -196,9 +197,9 @@ def create_event(id):
             else:
                 db = get_db()
                 t = db.execute(
-                    'INSERT INTO event (title, summary, startDate, endDate)'
-                    ' VALUES (?, ?, ?, ?)',
-                    (title, summary, start_date, end_date)
+                    'INSERT INTO event (title, summary, startDate, endDate, image)'
+                    ' VALUES (?, ?, ?, ?, ?)',
+                    (title, summary, start_date, end_date, image_url)
                 )
                 t = add_event_to_timeline(id, t.lastrowid, db)
                 db.commit()

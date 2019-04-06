@@ -6,7 +6,6 @@
             <input name="title" id="title" class="border border-grey border-1 border-solid" value="{{ request.form['title'] }}" required>
             <label for="summary">Summary</label>
             <textarea name="summary" id="summary" class="border border-grey border-1 border-solid" >{{ request.form['summary'] }}</textarea>
-            {{ timeline_id }}
             <div class="date-row">
                 <div class="date-container">
                     <label for="start-date">Start Date</label>
@@ -17,6 +16,8 @@
                     <input name="endDate" id="end-date" type="date" class="border border-grey border-1 border-solid">
                 </div>
             </div>
+            <label for="image_url">Image</label>
+            <input name="image" id="image_url" class="border border-grey border-1 border-solid" placeholder="Optional">
             <input type="submit" value="Save" id="btn-save-event" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
         </form>
     </div>
