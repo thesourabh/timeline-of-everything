@@ -19,17 +19,15 @@
     <article class="post">
       <header>
         <div>
-        <div class="action-bar">
-            <ul>
-                <li id="btn-add-event">Add Event</li>
-                {% with timeline_id=tl.timeline['id'] %}
-                    {% include 'blog/event-form.html' %}
-                {% endwith %}
-                <li id="btn-merge">Compare/Merge</li>
-                {% with timeline_id=tl.timeline['id'] %}
-                    {% include 'blog/merge-modal.html' %}
-                {% endwith %}
-            </ul>
+        <div class="action-bar my-6">
+          <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-add-event">Add Event</button>
+          {% with timeline_id=tl.timeline['id'] %}
+              {% include 'blog/event-form.html' %}
+          {% endwith %}
+          <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-merge">Compare/Merge</button>
+          {% with timeline_id=tl.timeline['id'] %}
+              {% include 'blog/merge-modal.html' %}
+          {% endwith %}
         </div>
 
             <div class="about">by {{ tl.timeline['author_id'] }} on {{ tl.timeline['created'].strftime('%Y-%m-%d') }}</div>

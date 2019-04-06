@@ -1,13 +1,14 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Timeline</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='tailwind.css') }}">
 <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
 <nav>
   <a href="{{ url_for('index') }}" class="logo"></a>
-  <div class="search-bar">
-    <input type="text" class="search-box">
+  <div class="search-bar ">
+    <input type="text" class="search-box border border-grey px-3 w-full">
     <div class="search-button"></div>
   </div>
   <ul class="nav-options">
