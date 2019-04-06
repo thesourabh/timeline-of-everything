@@ -52,6 +52,13 @@ def get_all_timelines():
     ).fetchall()
     return timelines
     
+def timelines_to_json(timelines):
+    tls = []
+    for timeline in timelines:
+        tls.append({'id': timeline['id'], 'title': timeline['title']})
+    return tls
+    
+    
     
 def get_date(date):
     if date: 
@@ -148,8 +155,7 @@ def view(id):
     """Update a post if the current user is the author."""
     tl = get_timeline(id)
     timeline_json = json.dumps(make_timeline_json(tl))
-    timelines = get_all_timelines()
-    print(timeline_json)
+    timelines = json.dumps(timelines_to_json(get_all_timelines()))
     return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'timelines': timelines})
 
 

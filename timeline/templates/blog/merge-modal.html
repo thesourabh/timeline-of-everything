@@ -1,31 +1,35 @@
 <div id="modal-merge" class="modal">
     <div class="modal-content">
         <span class="close" id="btn-close-merge-modal">&times;</span>
-        <form id="form-merge" >
+        <form id="form-merge">
             <h2>Select Another Timeline</h2>
-            <input class="border border-grey border-1 border-solid" type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
-            <ul id="myUL">
-                <li><a href="#">Adele</a></li>
-                <li><a href="#">Agnes</a></li>
-
-                <li><a href="#">Billy</a></li>
-                <li><a href="#">Bob</a></li>
-
-                <li><a href="#">Calvin</a></li>
-                <li><a href="#">Christina</a></li>
-                <li><a href="#">Cindy</a></li>
+            <input class="border border-grey border-1 border-solid" type="text" id="merge_modal_input" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+            <ul id="timelines_list_ul">
             </ul>
-            <input type="submit" value="Save" id="btn-save-event" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
+            <input type="button" value="Merge" id="btn-merge-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
+            <input type="button" value="Compare" id="btn-compare-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
+            <input type="button" value="Contrast" id="btn-contrast-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
         </form>
     </div>
 </div>
           
 <script>
+  let timelines_list = JSON.parse({{ timelines | tojson | safe }});
   // Get the modal
   let modal_merge = document.getElementById('modal-merge');
   let open_merge = document.getElementById("btn-merge");
   let close_merge = document.getElementById("btn-close-merge-modal");
   let form_merge = document.getElementById("form-merge");
+
+  let timelines_list_ul = document.getElementById('timelines_list_ul');
+  timelines_list.forEach(function (timeline) {
+    let a = document.createElement("a");
+    a.appendChild(document.createTextNode(timeline.title))
+    let li = document.createElement("li");
+    li.appendChild(a);
+    // li.setAttribute("id", "element4"); // added line
+    timelines_list_ul.appendChild(li);
+  });
 
   // When the user clicks on the button, open the modal 
   open_merge.onclick = function () {
@@ -38,10 +42,10 @@
   }
 
   function myFunction() {
-    var input, filter, ul, li, a, i, txtValue;
-    input = document.getElementById("myInput");
+    let input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("merge_modal_input");
     filter = input.value.toUpperCase();
-    ul = document.getElementById("myUL");
+    ul = document.getElementById("timelines_list_ul");
     li = ul.getElementsByTagName("li");
     for (i = 0; i < li.length; i++) {
       a = li[i].getElementsByTagName("a")[0];
