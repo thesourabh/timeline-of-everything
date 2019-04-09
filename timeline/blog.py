@@ -236,4 +236,54 @@ def merge_timelines(id1, id2):
         add_event_to_timeline(new_timeline_id, event_id, db)
     db.commit()
     return "SUCCESS" + url_for('blog.view', id=new_timeline_id)
+	
+@bp.route('/<int:id1>/compare/<int:id2>', methods=('GET',))
+@login_required
+def compare_timelines(id1, id2):
+    timeline1 = get_timeline(id1)
+    timeline2 = get_timeline(id2)
+    new_title = "Comparison of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    db = get_db()
+    t = create_timeline(new_title, new_title, db)
+    new_timeline_id = t.lastrowid
+    events_to_add = set()
+    for event in timeline1['events']:
+        for event2 in timeline2['events']:
+            if event['id'] == event2['id']:
+                events_to_add.add(event['id'])
+    for event_id in events_to_add:
+        add_event_to_timeline(new_timeline_id, event_id, db)
+    db.commit()
+    return "SUCCESS" + url_for('blog.view', id=new_timeline_id)
+	
+@bp.route('/<int:id1>/contrast/<int:id2>', methods=('GET',))
+@login_required
+def contrast_timelines(id1, id2):
+    timeline1 = get_timeline(id1)
+    timeline2 = get_timeline(id2)
+    new_title = "Contrast of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    db = get_db()
+    t = create_timeline(new_title, new_title, db)
+    new_timeline_id = t.lastrowid
+    events_to_add = set()
+
+    for event in timeline1['events']:
+        found = 0;
+        for event2 in timeline2['events']:
+            if event['id'] == event2['id']:
+                found = 1
+        if found == 0:
+            events_to_add.add(event['id'])
+    for event in timeline2['events']:
+        found = 0;
+        for event2 in timeline1['events']:
+            if event['id'] == event2['id']:
+                found = 1
+        if found == 0:
+            events_to_add.add(event['id'])
+
+    for event_id in events_to_add:
+        add_event_to_timeline(new_timeline_id, event_id, db)
+    db.commit()
+    return "SUCCESS" + url_for('blog.view', id=new_timeline_id)
     

@@ -7,9 +7,9 @@
             <ul id="timelines_list_ul">
             </ul>
             <div class="flex w-full">
-              <input type="button" value="Merge" id="btn-merge-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4  rounded">
-              <input type="button" value="Compare" id="btn-compare-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 ml-8 rounded">
-              <input type="button" value="Contrast" id="btn-contrast-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4  ml-8 rounded">
+              <input type="button" onclick="sendMergeRequest()" value="Merge" id="btn-merge-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4  rounded">
+              <input type="button" onclick="sendCompareRequest()" value="Compare" id="btn-compare-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 ml-8 rounded">
+              <input type="button" onclick="sendContrastRequest()" value="Contrast" id="btn-contrast-timeline" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4  ml-8 rounded">
             </div>
             
         </form>
@@ -23,6 +23,9 @@
   let open_merge = document.getElementById("btn-merge");
   let close_merge = document.getElementById("btn-close-merge-modal");
   let form_merge = document.getElementById("form-merge");
+  
+  let selected;
+  let tid;
 
   let timelines_list_ul = document.getElementById('timelines_list_ul');
   timelines_list.forEach(function (timeline) {
@@ -31,7 +34,13 @@
     }
     let a = document.createElement("a");
     a.onclick = function () {
-      sendMergeRequest(timeline.id);
+	  if (selected)
+	  {
+	    selected.style.backgroundColor = getComputedStyle(this).getPropertyValue('background-color');
+	  }
+	  a.style.backgroundColor = "#B3CFDD";
+      selected = this;
+	  tid = timeline.id; //maybe there is another way to get this from selected? I'm lazy
     };
     a.appendChild(document.createTextNode(timeline.title))
     let li = document.createElement("li");
@@ -68,7 +77,7 @@
   }
 
 
-  function sendMergeRequest(id2) {
+  function sendMergeRequest() {
     let XHR = new XMLHttpRequest();
     // Define what happens on successful data submission
     XHR.addEventListener("load", function(event) {
@@ -87,15 +96,65 @@
     });
 
     // Set up our request
-    XHR.open("GET", "/{{ timeline_id }}/merge/" + id2);
+    XHR.open("GET", "/{{ timeline_id }}/merge/" + tid);
+
+    // The data sent is what the user provided in the form
+    XHR.send();
+  }
+  
+    function sendCompareRequest() {
+    let XHR = new XMLHttpRequest();
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
+        form_merge.reset();
+        modal_merge.style.display = "none";
+        let new_timline_url = response.substring(7);
+        window.location.href = new_timline_url
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("GET", "/{{ timeline_id }}/compare/" + tid);
+
+    // The data sent is what the user provided in the form
+    XHR.send();
+  }
+  
+    function sendContrastRequest() {
+    let XHR = new XMLHttpRequest();
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
+        form_merge.reset();
+        modal_merge.style.display = "none";
+        let new_timline_url = response.substring(7);
+        window.location.href = new_timline_url
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("GET", "/{{ timeline_id }}/contrast/" + tid);
 
     // The data sent is what the user provided in the form
     XHR.send();
   }
 
   // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function (event) {
-    if (event.target == modal) {
+  window.onclick = function (event) { console.log(event.target);
+    if (event.target == modal_merge) {
       modal_merge.style.display = "none";
     }
   }

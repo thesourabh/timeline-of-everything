@@ -1,7 +1,7 @@
-<div id="modal-add-event" class="modal">
+<div id="modal-create-event" class="modal">
     <div class="modal-content">
         <span class="close" id="btn-close-modal">&times;</span>
-        <form id="form-add-event" >
+        <form id="form-create-event" >
             <label for="title">Title</label>
             <input name="title" id="title" class="border border-grey border-1 border-solid" value="{{ request.form['title'] }}" required>
             <label for="summary">Summary</label>
@@ -24,33 +24,36 @@
 </div>
           
 <script>
+
   // Get the modal
-  let modal = document.getElementById('modal-add-event');
-  let open = document.getElementById("btn-add-event");
-  let close = document.getElementById("btn-close-modal");
-  let form = document.getElementById("form-add-event");
+  let create_modal = document.getElementById('modal-create-event');
+  let create_open = document.getElementById("btn-create-event");
+  let create_close = document.getElementById("btn-close-modal");
+  let create_form = document.getElementById("form-create-event");
 
+  let start = document.getElementById('start-date');;
+  let end = document.getElementById('end-date');
+  
   // When the user clicks on the button, open the modal 
-  open.onclick = function () {
-    modal.style.display = "block";
+  create_open.onclick = function () {
+    create_modal.style.display = "block";
   }
-
   // When the user clicks on <span> (x), close the modal
-  close.onclick = function () {
-    modal.style.display = "none";
+  create_close.onclick = function () {
+    create_modal.style.display = "none";
   }
 
   function sendEventData() {
     let XHR = new XMLHttpRequest();
-    let FD = new FormData(form);
+    let FD = new FormData(create_form);
     // Define what happens on successful data submission
     XHR.addEventListener("load", function(event) {
       let response = event.target.responseText;
       if (response.startsWith("SUCCESS")) {
-        form.reset();
+        create_form.reset();
         let event_json = JSON.parse(response.substring(7));
         timeline_json.events.push(event_json);
-        modal.style.display = "none";
+        create_modal.style.display = "none";
         window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
       }
     });
@@ -67,20 +70,10 @@
     XHR.send(FD);
   }
 
-  form.addEventListener("submit", function (event) {
+  create_form.addEventListener("submit", function(event) {
     event.preventDefault();
     sendEventData();
   });
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-
-  let start = document.getElementById('start-date');
-  let end = document.getElementById('end-date');
 
   start.addEventListener('change', function() {
     if(start.value)

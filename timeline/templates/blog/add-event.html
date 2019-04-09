@@ -1,0 +1,49 @@
+<div id="modal-add-event" class="modal">
+    <div class="modal-content">
+        <span class="close" id="btn-addClose-modal">&times;</span>
+        <form id="form-add-event" >
+            <h2>Select An Event</h2>
+            <input class="border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+            <ul id="event_list_ul">
+            </ul>
+            <div class="flex w-full">
+              <input type="button" onclick="add()" value="Add" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4  rounded">
+            </div>
+            
+
+        </form>
+        <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-create-event">Create a new Event</button>
+          {% with timeline_id=tl.timeline['id'], timelines=tl.timelines %}
+              {% include 'blog/event-form.html' %}
+          {% endwith %}   
+    </div>
+</div>
+          
+<script>
+  let event_list = JSON.parse({{ timelines | tojson | safe }}); //make this into events
+  
+  // Get the modal
+  let addModal = document.getElementById('modal-add-event');
+  let addOpen = document.getElementById("btn-add-event");
+  let addClose = document.getElementById("btn-addClose-modal");
+  let addForm = document.getElementById("form-add-event");
+  
+  let newEventBtn = document.getElementById("btn-save-event");
+  
+
+  // When the user clicks on the button, open the modal 
+  addOpen.onclick = function () {
+    addModal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  addClose.onclick = function () {
+    addModal.style.display = "none";
+  }
+  
+  // When the user clicks on <span> (x), close the modal
+  newEventBtn.onclick = function () {
+    addModal.style.display = "none";
+  }
+
+</script>

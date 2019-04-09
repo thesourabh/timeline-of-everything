@@ -21,8 +21,8 @@
         <div>
         <div class="action-bar my-6">
           <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-add-event">Add Event</button>
-          {% with timeline_id=tl.timeline['id'] %}
-              {% include 'blog/event-form.html' %}
+          {% with timeline_id=tl.timeline['id'], timelines=tl.timelines %}
+              {% include 'blog/add-event.html' %}
           {% endwith %}
           <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-merge">Compare/Merge</button>
           {% with timeline_id=tl.timeline['id'], timelines=tl.timelines %}
@@ -36,6 +36,15 @@
       <div id='timeline-embed' style="width: 100%; height: 400px"></div>
       <script type="text/javascript">
         window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
+
+        // When the user clicks anywhere outside of a modal, close it
+        window.onclick = function (event) {
+          if (event.target.className =="modal") {
+            event.target.style.display = "none";
+          }
+        }
+
+
       </script>
     </article>
 {% endblock %}
