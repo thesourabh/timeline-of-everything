@@ -3,7 +3,7 @@
         <span class="close" id="btn-close-merge-modal">&times;</span>
         <form id="form-merge">
             <h2>Select Another Timeline</h2>
-            <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="merge_modal_input" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+            <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="merge_modal_input" onkeyup="filterTimelinesOnSearch()" placeholder="Search for names.." title="Type in a name">
             <ul id="timelines_list_ul" class="search_list_ul">
             </ul>
             <div class="flex w-full">
@@ -59,7 +59,7 @@
     modal_merge.style.display = "none";
   }
 
-  function myFunction() {
+  function filterTimelinesOnSearch() {
     let input, filter, ul, li, a, i, txtValue;
     input = document.getElementById("merge_modal_input");
     filter = input.value.toUpperCase();

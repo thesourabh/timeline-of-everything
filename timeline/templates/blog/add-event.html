@@ -3,7 +3,7 @@
         <span class="close" id="btn-addClose-modal">&times;</span>
         <form id="form-add-event" >
             <h2>Select An Event</h2>
-            <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name">
+            <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="filterEventsOnSearch()" placeholder="Search for names.." title="Type in a name">
             <ul id="event_list_ul" class="search_list_ul">
             </ul>
             <div class="flex w-full">
@@ -58,6 +58,24 @@
     });
   }
   initializeEventList();
+
+  
+  function filterEventsOnSearch() {
+    let input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("add_modal_input");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("event_list_ul");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("a")[0];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  }
   
   function sendAddEventRequest() {
     if (!eid) {
