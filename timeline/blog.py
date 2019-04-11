@@ -52,15 +52,16 @@ def get_all_timelines():
     ).fetchall()
     return timelines
     
-def timelines_to_json(timelines):
-    tls = []
-    for timeline in timelines:
-        tls.append({'id': timeline['id'], 'title': timeline['title']})
-    return tls
+    
+def sqlarray_to_json(array):
+    json_array = []
+    for object in array:
+        json_array.append({'id': object['id'], 'title': object['title']})
+    return json_array
     
     
     
-def get_date(date):
+def get_formatted_date(date):
     if date: 
         if isinstance(date, str):
             date = datetime.strptime(date, '%Y-%m-%d')
@@ -69,12 +70,34 @@ def get_date(date):
         return date_obj
     return None
     
-def get_event(event):
+    
+def get_event(id):
+    """Get an event by id.
+    :param id: id of event to get
+    """
+    db = get_db()
+    event = db.execute(
+        'SELECT id, title, summary, startDate, endDate, image, location'
+        ' FROM event t WHERE id = ?',
+        (id,)
+    ).fetchone()
+    return event
+    
+    
+def get_all_events():
+    db = get_db()
+    events = db.execute(
+        'SELECT id, title FROM event'
+    ).fetchall()
+    return events
+
+    
+def get_formatted_event(event):
     new_event = {'text': {'headline': event['title'], 'text': event['summary']}}
-    start_date = get_date(event['startDate'])
+    start_date = get_formatted_date(event['startDate'])
     if start_date:
         new_event['start_date'] = start_date
-    end_date = get_date(event['endDate'])
+    end_date = get_formatted_date(event['endDate'])
     if end_date:
         new_event['end_date'] = end_date
     if 'image' in event.keys():
@@ -93,8 +116,10 @@ def make_timeline_json(tl):
            'events': []
           };
     for event in tl['events']:
-        js['events'].append(get_event(event))
+        js['events'].append(get_formatted_event(event))
     return js
+    
+
 
 def create_timeline(title, summary, db):
     t = db.execute(
@@ -161,8 +186,10 @@ def view(id):
     """Update a post if the current user is the author."""
     tl = get_timeline(id)
     timeline_json = json.dumps(make_timeline_json(tl))
-    timelines = json.dumps(timelines_to_json(get_all_timelines()))
-    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'timelines': timelines})
+    timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
+    events = json.dumps(sqlarray_to_json(get_all_events()))
+    event_ids = [event['id'] for event in tl['events']]
+    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'timelines': timelines, 'events': events, 'event_ids': event_ids})
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
@@ -203,11 +230,24 @@ def create_event(id):
                 )
                 t = add_event_to_timeline(id, t.lastrowid, db)
                 db.commit()
-                event_json = get_event(request.form)
+                event_json = get_formatted_event(request.form)
                 return "SUCCESS" + json.dumps(event_json)
         except Exception as e:
             return e
     return "Only POST requests supported"
+    
+    
+@bp.route('/<int:tid>/addevent/<int:eid>', methods=('GET',))
+@login_required
+def add_event(tid, eid):
+    event = get_event(eid)
+    db = get_db()
+    add_event_to_timeline(tid, eid, db)
+    db.commit()
+    event_json = get_formatted_event(event)
+    return "SUCCESS" + json.dumps(event_json)
+    
+    
     
 def add_event_to_timeline(timeline_id, event_id, db):
     t = db.execute(

@@ -232,7 +232,7 @@ input[type=submit] {
 
 
 
-#merge_modal_input {
+#merge_modal_input, #add_modal_input {
   background-image: url('icons/search_icon.png');
   background-position: 10px 12px;
   background-repeat: no-repeat;
@@ -244,14 +244,14 @@ input[type=submit] {
   margin-bottom: 12px;
 }
 
-#timelines_list_ul {
+.search_list_ul {
   list-style-type: none;
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
 }
 
-#timelines_list_ul li a {
+.search_list_ul li a {
   border: 1px solid #ddd;
   margin-top: -1px; /* Prevent double borders */
   background-color: #f6f6f6;
@@ -262,7 +262,7 @@ input[type=submit] {
   display: block
 }
 
-#timelines_list_ul li a:hover:not(.header) {
+.search_list_ul li a:hover:not(.header) {
   background-color: #eee;
 }
 

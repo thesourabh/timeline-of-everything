@@ -11,6 +11,7 @@
     <script>
       let tjson = {{ tl.timeline_json  | tojson | safe }}
       let timeline_json = JSON.parse(tjson);
+      let event_ids = {{ tl.event_ids }}
       let options = {
         zoom_sequence: [0.1, 0.25, 0.5, 1, 2, 4, 8, 10],
         scale_factor: 0.25
@@ -21,7 +22,7 @@
         <div>
         <div class="action-bar my-6">
           <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-add-event">Add Event</button>
-          {% with timeline_id=tl.timeline['id'], timelines=tl.timelines %}
+          {% with event_ids=tl.event_ids, timeline_id=tl.timeline['id'], events=tl.events %}
               {% include 'blog/add-event.html' %}
           {% endwith %}
           <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded" id="btn-merge">Compare/Merge</button>
