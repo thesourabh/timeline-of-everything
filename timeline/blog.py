@@ -65,7 +65,7 @@ def get_date(date):
         if isinstance(date, str):
             date = datetime.strptime(date, '%Y-%m-%d')
         d = date.date()
-        date_obj = {'year': d.year, 'month': d.year, 'day': d.day}
+        date_obj = {'year': d.year, 'month': d.month, 'day': d.day}
         return date_obj
     return None
     
