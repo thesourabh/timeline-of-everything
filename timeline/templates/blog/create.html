@@ -7,9 +7,17 @@
 {% block content %}
   <form method="post">
     <label for="title">Title</label>
-    <input name="title" id="title" value="{{ request.form['title'] }}" required>
+    <input class="border border-grey border-1 border-solid" name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="summary">Summary</label>
-    <textarea name="summary" id="summary">{{ request.form['summary'] }}</textarea>
+    <textarea class="border border-grey border-1 border-solid" name="summary" id="summary">{{ request.form['summary'] }}</textarea>
     <input type="submit" value="Save">
   </form>
 {% endblock %}
+
+<form method="post">
+    <label for="username">Username</label>
+    <input class="border border-grey border-1 border-solid" name="username" id="username" required>
+    <label for="password">Password</label>
+    <input class="border border-grey border-1 border-solid" type="password" name="password" id="password" required>
+    <input type="submit" value="Log In" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
+  </form>

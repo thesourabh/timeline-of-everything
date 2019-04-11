@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+<form method="post">
     <label for="username">Username</label>
-    <input name="username" id="username" required>
+    <input class="border border-grey border-1 border-solid" name="username" id="username" required>
     <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Register">
+    <input class="border border-grey border-1 border-solid" type="password" name="password" id="password" required>
+    <input type="submit" value="Log In" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
   </form>
 {% endblock %}
