@@ -157,7 +157,7 @@ def create():
 @login_required
 def updateTimeline(id):
     """Update a post if the current user is the author."""
-    post = get_timeline(id)
+    tl = get_timeline(id)
 
     if request.method == 'POST':
         title = request.form['title']
@@ -177,8 +177,11 @@ def updateTimeline(id):
             )
             db.commit()
             return redirect(url_for('blog.index'))
-
-    return render_template('blog/update.html', post=post)
+            
+    
+    events = json.dumps(sqlarray_to_json(get_all_events()))
+    event_ids = [event['id'] for event in tl['events']]
+    return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids})
 
 
 @bp.route('/<int:id>/view', methods=('GET',))
