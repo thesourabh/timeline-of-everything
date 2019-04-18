@@ -1,22 +1,151 @@
 {% extends 'base.html' %}
 
+
 {% block header %}
   <h1>{% block title %}Edit "{{ tl.timeline['title'] }}"{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <label for="title">Title</label>
-    {{ tl.events }}}
-    {{ tl.event_ids }}}
-    <input name="title" class="border border-grey border-1 border-solid" id="title" value="{{ request.form['title'] or tl.timeline['title'] }}" required>
-    <label for="body">Body</label>
-    <textarea name="body" class="border border-grey border-1 border-solid" id="body">{{ request.form['summary'] or tl.timeline['summary'] }}</textarea>
-    <input type="submit" value="Save">
-  </form>
-  <hr>
+<div class="w-full block sm:block md:block lg:flex xl:flex">
+      <!-- Edit Section-->
+      <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2 block p-6">
+        <h3>
+          Title
+        </h3>
+        <input name="title" class="w-full h-10 mt-4 border border-grey border-1 border-solid" id="title" value="{{ request.form['title'] or tl.timeline['title'] }}" required>
+        
+        <h3 class="mt-10">
+          Summary
+        </h3>
+        <textarea name="body" class="w-full h-64 mt-4 border border-grey border-1 border-solid" id="body">{{ request.form['summary'] or tl.timeline['summary'] }}</textarea>
+
+        <div class="w-full block sm:block md:block lg:block xl:flex">
+
+          <div class ="w-full sm:w-full md:w-full lg:w-full lg:pr-0 xl:pr-2">
+            <input type="submit" value="Save" id="btn-save-timeline" class="w-full h-12 bg-blue hover:bg-blue-dark text-white font-bold rounded">
+          </div>
+
+          <div class ="w-full sm:w-full md:w-full lg:w-full lg:px-0 xl:px-2">
+            <input type="submit" value="Cancel" id="btn-cancel-edit" class="w-full h-12 bg-grey hover:bg-grey-dark text-white font-bold rounded" onclick="window.history.go(-1)">
+          </div>
+
+          <form action="{{ url_for('blog.delete', id=tl.timeline['id']) }}" method="post" class ="w-full sm:w-full md:w-full lg:w-full lg:pl-0 xl:pl-2">
+            <input class="-my-4 w-full h-12 bg-red hover:bg-red-dark text-white font-bold rounded" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+          </form>
+
+        </div>  
+      </div>
+
+      <!--Select Section-->
+      <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2   block p-6">
+          <form id="form-merge">
+              <h3>Events in Timeline "{{ tl.timeline['title'] }}"</h3>
+              <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="filterEventsOnSearch()" placeholder="Search for names.." title="Type in a name">
+            <ul id="event_list_ul" class="search_list_ul">
+              </ul>
+
+            <div class="flex w-full">
+              <div class = "w-full pr-2">
+                <input type="button" onclick="editEvent()" value="Edit" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
+              </div>
+              <div class = "w-full pl-2">
+                <input type="button" onclick="deleteEvent()" value="Delete" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
+              </div>
+            </div>
+          </form>
+      </div>
+
+    </div>
+
+<script>
+  let event_list = JSON.parse({{ tl.events | tojson | safe }}); //make this into events
   
-  <form action="{{ url_for('blog.delete', id=tl.timeline['id']) }}" method="post">
-    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-  </form>
+  // Get the modal
+
+  let event_ids = {{ tl.event_ids }}
+  
+  let newEventBtn = document.getElementById("btn-save-event");
+  
+  let selected_event;
+  let eid;
+
+  let event_list_ul = document.getElementById('event_list_ul');
+  function initializeEventList () {
+    event_list_ul.innerHTML = "";
+    event_list.forEach(function (event) {
+      if (!event_ids.includes(event.id)) {
+        return;
+      }
+      let a = document.createElement("a");
+      a.onclick = function () {
+        if (selected_event)
+        {
+          selected_event.style.backgroundColor = getComputedStyle(this).getPropertyValue('background-color');
+        }
+        a.style.backgroundColor = "#B3CFDD";
+        selected_event = this;
+        eid = event.id; //maybe there is another way to get this from selected? I'm lazy
+      };
+      a.appendChild(document.createTextNode(event.title));
+
+
+
+      let li = document.createElement("li");
+      li.appendChild(a);
+      // li.setAttribute("id", "element4"); // added line
+      event_list_ul.appendChild(li);
+    });
+  }
+  initializeEventList();
+
+  
+  function filterEventsOnSearch() {
+    let input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("add_modal_input");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("event_list_ul");
+    li = ul.getElementsByTagName("li");
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("a")[0];
+      txtValue = a.textContent || a.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  }
+  /* //might use this if we have add events here
+  function sendAddEventRequest() {
+    if (!eid) {
+        return;
+    }
+    let XHR = new XMLHttpRequest();
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
+        addForm.reset();
+        let event_json = JSON.parse(response.substring(7));
+        timeline_json.events.push(event_json);
+        create_modal.style.display = "none";
+        event_ids.push(eid);
+        initializeEventList();
+        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("GET", "/{{ timeline_id }}/addevent/" + eid);
+
+    // The data sent is what the user provided in the form
+    XHR.send();
+  }
+*/
+</script>
 {% endblock %}
