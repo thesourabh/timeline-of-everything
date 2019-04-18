@@ -14,12 +14,10 @@ bp = Blueprint('blog', __name__)
 
 @bp.route('/')
 def index():
-    """Show all the posts, most recent first."""
-    db = get_db()
-    timelines = db.execute(
-        'SELECT * FROM timeline t'
-    ).fetchall()
-    return render_template('blog/index.html', timelines=timelines)
+    """Show all the posts"""
+    timelines = sqlarray_to_json(get_all_timelines())
+    print(timelines)
+    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))
 
 
 def get_timeline(id):
@@ -48,7 +46,7 @@ def get_timeline(id):
 def get_all_timelines():
     db = get_db()
     timelines = db.execute(
-        'SELECT id, title FROM timeline'
+        'SELECT id, title, author_id FROM timeline'
     ).fetchall()
     return timelines
     
@@ -56,7 +54,10 @@ def get_all_timelines():
 def sqlarray_to_json(array):
     json_array = []
     for object in array:
-        json_array.append({'id': object['id'], 'title': object['title']})
+        entry = {'id': object['id'], 'title': object['title']}
+        if 'author_id' in object.keys():
+            entry['author_id'] = object['author_id']
+        json_array.append(entry)
     return json_array
     
     
@@ -150,7 +151,8 @@ def create():
             db.commit()
             return redirect(url_for('blog.view', id=t.lastrowid))
             
-    return render_template('blog/create.html')
+    timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
+    return render_template('blog/create.html', timelines=timelines)
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
@@ -181,7 +183,8 @@ def updateTimeline(id):
     
     events = json.dumps(sqlarray_to_json(get_all_events()))
     event_ids = [event['id'] for event in tl['events']]
-    return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids})
+    timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
+    return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids}, timelines=timelines)
 
 
 @bp.route('/<int:id>/view', methods=('GET',))
@@ -192,7 +195,7 @@ def view(id):
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     events = json.dumps(sqlarray_to_json(get_all_events()))
     event_ids = [event['id'] for event in tl['events']]
-    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'timelines': timelines, 'events': events, 'event_ids': event_ids})
+    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'events': events, 'event_ids': event_ids}, timelines=timelines)
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))

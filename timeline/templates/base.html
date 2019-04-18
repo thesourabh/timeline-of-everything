@@ -12,12 +12,57 @@
     <img src="../static/timeline_logo.png" width="100">
   </a>
   <!--Search Bar-->
-  <div class="flex  w-4/5 my-4 mx-auto lg:w-1/2  lg:pl-10 h-10 pl-2" >
-    <input type="text" class="border border-grey px-3 w-full" placeholder="Search">
+  {% if timelines is defined %}
+  <div class="search-area flex  w-4/5 my-4 mx-auto lg:w-1/2  lg:pl-10 h-10 pl-2" >
+    <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
+
+    <ul id="search_timelines_list_ul" class="search_list_ul">
+    </ul>
     <button class="border border-grey w-12 hover:bg-grey-light bg-white">
         <i class="fa fa-search text-grey-dark"></i>
     </button>
   </div>
+
+  <script>
+    let search_timelines_list = JSON.parse({{ timelines | tojson | safe }});
+    let search_timelines_list_ul = document.getElementById('search_timelines_list_ul');
+    let search_timelines_input = document.getElementById('search_timelines_input');
+    
+    window.onclick = function (event) {
+      if (event.target == search_timelines_input) {
+        search_timelines_list_ul.style.display = 'block';
+      } else {
+        search_timelines_list_ul.style.display = "none";
+      }
+    };
+    search_timelines_list.forEach(function (timeline) {
+      let a = document.createElement("a");
+      a.appendChild(document.createTextNode(timeline.title));
+      a.setAttribute('href', '/' + timeline.id + '/view');
+      let li = document.createElement("li");
+      li.appendChild(a);
+      // li.setAttribute("id", "element4"); // added line
+      search_timelines_list_ul.appendChild(li);
+    });
+
+    search_timelines_list_ul.style.top = search_timelines_input.style.height;
+
+    function searchTimelinesFilter() {
+      let filter, li, a, i, txtValue;
+      filter = search_timelines_input.value.toUpperCase();
+      li = search_timelines_list_ul.getElementsByTagName("li");
+      for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          li[i].style.display = "";
+        } else {
+          li[i].style.display = "none";
+        }
+      }
+    }
+  </script>
+  {% endif %}
   <ul class="flex lg:justify-end w-4/5 my-4 mx-auto lg:w-1/4  h-10 pl-2 ">
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
