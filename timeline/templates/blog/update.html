@@ -76,15 +76,14 @@
       }
       let a = document.createElement("a");
       a.onclick = function () {
-        if (selected_event)
-        {
-          selected_event.style.backgroundColor = getComputedStyle(this).getPropertyValue('background-color');
-        }
-        a.style.backgroundColor = "#B3CFDD";
-        selected_event = this;
-        eid = event.id; //maybe there is another way to get this from selected? I'm lazy
       };
       a.appendChild(document.createTextNode(event.title));
+      let actionBox = document.createElement("div");
+      actionBox.classList.add("action-box");
+      let editButton = document.createElement("span");
+      editButton.appendChild(document.createTextNode("Edit"));
+      actionBox.appendChild(editButton);
+      a.appendChild(actionBox);
 
 
 

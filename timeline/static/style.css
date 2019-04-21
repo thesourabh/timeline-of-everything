@@ -259,7 +259,8 @@ input[type=submit] {
   text-decoration: none;
   font-size: 18px;
   color: black;
-  display: block
+  display: block;
+  position: relative;
 }
 
 .search_list_ul li a:hover:not(.header) {
@@ -300,3 +301,15 @@ input[type=submit] {
   display: block;
 }
 
+.search_list_ul li a .action-box {
+  position: absolute;
+  right: 0;
+  font-size: 12pt;
+  top: 14px;
+}
+.search_list_ul li a .action-box span {
+  font-size: 12pt;
+  margin-right: 10px;
+  color: #8e6339;
+  text-decoration: underline;
+}
