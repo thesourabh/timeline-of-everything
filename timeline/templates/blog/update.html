@@ -6,59 +6,57 @@
 {% endblock %}
 
 {% block content %}
-<div class="w-full block sm:block md:block lg:flex xl:flex">
-      <!-- Edit Section-->
-      <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2 block p-6">
-        <h3>
-          Title
-        </h3>
-        <input name="title" class="w-full h-10 mt-4 border border-grey border-1 border-solid" id="title" value="{{ request.form['title'] or tl.timeline['title'] }}" required>
-        
-        <h3 class="mt-10">
-          Summary
-        </h3>
-        <textarea name="body" class="w-full h-64 mt-4 border border-grey border-1 border-solid" id="body">{{ request.form['summary'] or tl.timeline['summary'] }}</textarea>
 
-        <div class="w-full block sm:block md:block lg:block xl:flex">
+{% if g.user['id'] == tl.timeline['author_id'] %}
+  <div class="w-full block sm:block md:block lg:flex xl:flex">
+    <!-- Edit Section-->
+    <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2 block p-6">
 
-          <div class ="w-full sm:w-full md:w-full lg:w-full lg:pr-0 xl:pr-2">
-            <input type="submit" value="Save" id="btn-save-timeline" class="w-full h-12 bg-blue hover:bg-blue-dark text-white font-bold rounded">
-          </div>
 
-          <div class ="w-full sm:w-full md:w-full lg:w-full lg:px-0 xl:px-2">
-            <input type="submit" value="Cancel" id="btn-cancel-edit" class="w-full h-12 bg-grey hover:bg-grey-dark text-white font-bold rounded" onclick="window.history.go(-1)">
-          </div>
+      <form method="post">
+        <label for="title">Title</label>
+        <input class="h-10 border border-grey border-1 border-solid" name="title" id="title" value="{{ request.form['title'] or tl.timeline['title'] }}" required>
+        <label class="mt-4" for="body">Body</label>
+        <textarea class="h-10 border border-grey border-1 border-solid" name="body" id="body">{{ request.form['body'] or tl.timeline['summary'] }}</textarea>
+        <input class="w-full h-12 bg-blue hover:bg-blue-dark text-white font-bold rounded" type="submit" value="Save">
+      </form>
 
-          <form action="{{ url_for('blog.delete', id=tl.timeline['id']) }}" method="post" class ="w-full sm:w-full md:w-full lg:w-full lg:pl-0 xl:pl-2">
-            <input class="-my-4 w-full h-12 bg-red hover:bg-red-dark text-white font-bold rounded" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
-          </form>
+      <div class="w-full flex">
 
-        </div>  
-      </div>
+        <div class ="w-full pr-2">
+          <input type="submit" value="Cancel" id="btn-cancel-edit" class="w-full h-12 bg-grey hover:bg-grey-dark text-white font-bold rounded" onclick="window.history.go(-1)">
+        </div>
 
-      <!--Select Section-->
-      <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2   block p-6">
-          <form id="form-merge">
-              <h3>Events in Timeline "{{ tl.timeline['title'] }}"</h3>
-              <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="filterEventsOnSearch()" placeholder="Search for names.." title="Type in a name">
-            <ul id="event_list_ul" class="search_list_ul">
-              </ul>
+        <form action="{{ url_for('blog.delete', id=tl.timeline['id']) }}" method="post" class ="w-full pl-2">
+          <input class="-my-4 w-full h-12 bg-red hover:bg-red-dark text-white font-bold rounded" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+        </form>
 
-            <div class="flex w-full">
-              <div class = "w-full pr-2">
-                <input type="button" onclick="editEvent()" value="Edit" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
-              </div>
-              <div class = "w-full pl-2">
-                <input type="button" onclick="deleteEvent()" value="Delete" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
-              </div>
-            </div>
-          </form>
-      </div>
-
+      </div>  
     </div>
 
+    <!--Select Section-->
+    <div class="w-full sm:w-full md:w-full lg:w-1/2 xl:w-1/2   block p-6">
+        <form id="form-merge">
+            <h3>Events in Timeline "{{ tl.timeline['title'] }}"</h3>
+            <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="filterEventsOnSearch()" placeholder="Search for names.." title="Type in a name">
+          <ul id="event_list_ul" class="search_list_ul">
+            </ul>
+
+          <div class="flex w-full">
+            <div class = "w-full pr-2">
+              <input type="button" onclick="editEvent()" value="Edit" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
+            </div>
+            <div class = "w-full pl-2">
+              <input type="button" onclick="deleteEvent()" value="Delete" id="btn-add-event" class="bg-red hover:bg-red-dark text-white font-bold rounded w-full h-12">
+            </div>
+          </div>
+        </form>
+    </div>
+
+  </div>
+
 <script>
-  let event_list = JSON.parse({{ tl.events | tojson | safe }}); //make this into events
+  let event_list = JSON.parse({{ tl.events | tojson | safe }});
   
   // Get the modal
 
@@ -115,6 +113,21 @@
       }
     }
   }
+
+  function deleteEvent()
+  {
+    let eventIdToDelete = eid;
+    console.log(eid);
+  }
+
+  function editEvent()
+  {
+    let eventIdToEdit = eid;
+    console.log(eid);
+
+    //This should probably be a modal?
+  }
+
   /* //might use this if we have add events here
   function sendAddEventRequest() {
     if (!eid) {
@@ -148,4 +161,10 @@
   }
 */
 </script>
+
+{% else %}
+  <input type="submit" value="You do not have permission to edit." id="btn-cancel-edit" class="w-full h-12 bg-red hover:bg-red-dark text-white font-bold rounded" onclick="window.history.go(-1)">
+{% endif %}
+
+
 {% endblock %}
