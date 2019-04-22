@@ -28,7 +28,7 @@ CREATE TABLE event (
     startDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     endDate TIMESTAMP,
     image TEXT,
-    location TEXT
+    credit TEXT
 );
 
 CREATE TABLE timeline_has (

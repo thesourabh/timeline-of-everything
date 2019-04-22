@@ -78,7 +78,7 @@ def get_event(id):
     """
     db = get_db()
     event = db.execute(
-        'SELECT id, title, summary, startDate, endDate, image, location'
+        'SELECT id, title, summary, startDate, endDate, image, credit'
         ' FROM event t WHERE id = ?',
         (id,)
     ).fetchone()
@@ -103,6 +103,8 @@ def get_formatted_event(event):
         new_event['end_date'] = end_date
     if 'image' in event.keys():
         new_event['media'] = {'url': event['image'], 'thumbnail': event['image']}
+        if 'credit' in event.keys():
+            new_event['media']['credit'] = event['credit']
     return new_event
 
     
@@ -235,6 +237,7 @@ def create_event(id):
             start_date = request.form['startDate'] + ' 12:00:00'
             end_date = request.form['endDate'] + ' 12:00:00' if request.form['endDate'] else ''
             image_url = request.form['image']
+            credit = request.form['credit']
             error = None
     
             if error is not None:
@@ -243,9 +246,9 @@ def create_event(id):
             else:
                 db = get_db()
                 t = db.execute(
-                    'INSERT INTO event (title, summary, startDate, endDate, image)'
-                    ' VALUES (?, ?, ?, ?, ?)',
-                    (title, summary, start_date, end_date, image_url)
+                    'INSERT INTO event (title, summary, startDate, endDate, image, credit)'
+                    ' VALUES (?, ?, ?, ?, ?, ?)',
+                    (title, summary, start_date, end_date, image_url, credit)
                 )
                 t = add_event_to_timeline(id, t.lastrowid, db)
                 db.commit()
