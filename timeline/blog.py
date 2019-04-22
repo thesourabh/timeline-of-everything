@@ -178,8 +178,7 @@ def updateTimeline(id):
                 (title, body, id)
             )
             db.commit()
-            return redirect(url_for('blog.index'))
-            
+            return view(id)
     
     events = json.dumps(sqlarray_to_json(get_all_events()))
     event_ids = [event['id'] for event in tl['events']]
