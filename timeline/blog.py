@@ -51,6 +51,15 @@ def get_all_timelines():
     return timelines
     
     
+def sqlarray_to_json_event(array):
+    json_array = []
+    for object in array:
+        entry = {'id': object['id'], 'title': object['title'], 'summary': object['summary'], 'startDate': str(object['startDate']), 'endDate': str(object['endDate']), 'image': object['image'], 'credit': object['credit']}
+        if 'author_id' in object.keys():
+            entry['author_id'] = object['author_id']
+        json_array.append(entry)
+    return json_array
+    
 def sqlarray_to_json(array):
     json_array = []
     for object in array:
@@ -59,8 +68,6 @@ def sqlarray_to_json(array):
             entry['author_id'] = object['author_id']
         json_array.append(entry)
     return json_array
-    
-    
     
 def get_formatted_date(date):
     if date: 
@@ -91,7 +98,14 @@ def get_all_events():
         'SELECT id, title FROM event'
     ).fetchall()
     return events
-
+	
+def get_all_from_all_events():
+    db = get_db()
+    events = db.execute(
+        'SELECT id, title, summary, startDate, endDate, image, credit'
+        ' FROM event'
+    ).fetchall()
+    return events
     
 def get_formatted_event(event):
     new_event = {'text': {'headline': event['title'], 'text': event['summary']}}
@@ -182,7 +196,8 @@ def updateTimeline(id):
             db.commit()
             return view(id)
     
-    events = json.dumps(sqlarray_to_json(get_all_events()))
+    events = json.dumps(sqlarray_to_json_event(get_all_from_all_events()))
+    print(events)
     event_ids = [event['id'] for event in tl['events']]
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids}, timelines=timelines)
@@ -194,7 +209,7 @@ def view(id):
     tl = get_timeline(id)
     timeline_json = json.dumps(make_timeline_json(tl))
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
-    events = json.dumps(sqlarray_to_json(get_all_events()))
+    events = json.dumps(sqlarray_to_json(get_all_from_all_events()))
     event_ids = [event['id'] for event in tl['events']]
     return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'events': events, 'event_ids': event_ids}, timelines=timelines)
 

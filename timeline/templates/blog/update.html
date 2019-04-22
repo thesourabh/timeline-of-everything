@@ -41,36 +41,70 @@
             <input class="modal-search-input border border-grey border-1 border-solid" type="text" id="add_modal_input" onkeyup="filterEventsOnSearch()" placeholder="Search for names.." title="Type in a name">
           <ul id="event_list_ul" class="search_list_ul">
             </ul>
-
-          <div class="flex w-full">
-            <div class = "w-full pr-2">
-              <input type="button" onclick="editEvent()" value="Edit" id="btn-add-event" class="bg-blue hover:bg-blue-dark text-white font-bold rounded w-full h-12">
-            </div>
-            <div class = "w-full pl-2">
-              <input type="button" onclick="deleteEvent()" value="Delete" id="btn-add-event" class="bg-red hover:bg-red-dark text-white font-bold rounded w-full h-12">
-            </div>
-          </div>
         </form>
     </div>
 
   </div>
-
+  
+<div id="modal-edit-event" class="modal">
+    <div class="modal-content">
+        <span class="close" id="btn-close-modal">&times;</span>
+        <form id="form-edit-event" >
+            <label for="event_title">Title</label>
+            <input name="event_title" id="event_title" class="border border-grey border-1 border-solid" value="{{ request.form['title'] }}" required>
+            <label for="event_summary">Summary</label>
+            <textarea name="event_summary" id="event_summary" class="border border-grey border-1 border-solid" >{{ request.form['summary'] }}</textarea>
+            <div class="date-row">
+                <div class="date-container">
+                    <label for="start-date">Start Date</label>
+                    <input name="startDate" id="start-date" type="date" class="border border-grey border-1 border-solid" required>
+                </div>
+                <div class="date-container">
+                    <label for="end-date">End Date</label>
+                    <input name="endDate" id="end-date" type="date" class="border border-grey border-1 border-solid">
+                </div>
+            </div>
+            <label for="image_url">Image</label>
+            <input name="image" id="image_url" class="border border-grey border-1 border-solid" placeholder="(Optional)">
+            <label for="credit">Source</label>
+            <input name="credit" id="credit" class="border border-grey border-1 border-solid" placeholder="(Optional) Add image credit">
+            <input type="submit" value="Save" id="btn-save-event" class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 mr-8 ml-8 rounded">
+        </form>
+    </div>
+</div>
+  
+  
 <script>
   let event_list = JSON.parse({{ tl.events | tojson | safe }});
   
+  console.log(event_list);
+    
   // Get the modal
-
-  let event_ids = {{ tl.event_ids }}
-  
-  let newEventBtn = document.getElementById("btn-save-event");
+  let edit_modal = document.getElementById('modal-edit-event');
+  let edit_open = document.getElementById("btn-edit-event");
+  let edit_close = document.getElementById("btn-close-modal");
+  let edit_form = document.getElementById("form-edit-event");
   
   let selected_event;
   let eid;
+		
+  // When the user clicks on <span> (x), close the modal
+  edit_close.onclick = function () {
+    edit_modal.style.display = "none";
+  }
+  
+  let start = document.getElementById('start-date');;
+  let end = document.getElementById('end-date');
+  
+  let event_ids = {{ tl.event_ids }}
+  
+  let newEventBtn = document.getElementById("btn-save-event");
 
   let event_list_ul = document.getElementById('event_list_ul');
   function initializeEventList () {
     event_list_ul.innerHTML = "";
     event_list.forEach(function (event) {
+	console.log(event);
       if (!event_ids.includes(event.id)) {
         return;
       }
@@ -82,6 +116,33 @@
       actionBox.classList.add("action-box");
       let editButton = document.createElement("span");
       editButton.appendChild(document.createTextNode("Edit"));
+	  
+	  editButton.onclick = function () {
+	  
+		edit_modal.style.display = "block";
+		document.getElementById('event_title').value = event.title;
+		if(typeof event.summary != 'undefined')
+		{
+			document.getElementById('event_summary').value = event.summary;
+		}
+		
+		console.log(event.startDate.split(' ')[0]);
+		
+		document.getElementById('start-date').value = event.startDate.split(' ')[0];
+		if(typeof event.endDate != 'undefined')
+		{
+			document.getElementById('end-date').value = event.endDate.split(' ')[0];
+		}
+		if(typeof event.image != 'undefined')
+		{
+			document.getElementById('image_url').value = event.image;
+		}
+		if(typeof event.credit != 'undefined')
+		{
+			document.getElementById('credit').value = event.credit;
+		}
+	  }
+	  
       let delButton = document.createElement("span");
       delButton.appendChild(document.createTextNode("Delete"));
       delButton.onclick = function () {
@@ -119,20 +180,6 @@
     }
   }
 
-  function deleteEvent()
-  {
-    let eventIdToDelete = eid;
-    console.log(eid);
-  }
-
-  function editEvent()
-  {
-    let eventIdToEdit = eid;
-    console.log(eid);
-
-    //This should probably be a modal?
-  }
-
   function sendDeleteRequest (eid) {
     let XHR = new XMLHttpRequest();
     // Define what happens on successful data submission
@@ -149,6 +196,60 @@
     });
     XHR.open("GET", "/{{ tl.timeline['id'] }}/deleteevent/" + eid);
     XHR.send();
+  }
+    
+  function sendEventData() {
+  
+    //if user_id = event.author_id || event.public = true update old event
+	
+	//else create a new event.
+  
+    let XHR = new XMLHttpRequest();
+    let FD = new FormData(edit_form);
+    // Define what happens on successful data submission
+    XHR.addEventListener("load", function(event) {
+      let response = event.target.responseText;
+      if (response.startsWith("SUCCESS")) {
+        edit_form.reset();
+        let event_json = JSON.parse(response.substring(7));
+        timeline_json.events.push(event_json);
+        create_modal.style.display = "none";
+        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
+      }
+    });
+
+    // Define what happens in case of error
+    XHR.addEventListener("error", function(event) {
+      alert('Oops! Something went wrong.');
+    });
+
+    // Set up our request
+    XHR.open("POST", "/{{ timeline_id }}/create");
+
+    // The data sent is what the user provided in the form
+    XHR.send(FD);
+  }
+
+  edit_form.addEventListener("submit", function(event) {
+    event.preventDefault();
+    sendEventData();
+  });
+  
+  start.addEventListener('change', function() {
+    if(start.value)
+      end.min = start.value;
+  }, false);
+
+  end.addEventListener('change', function() {
+    if(end.value)
+      start.max = end.value;
+  }, false);
+  
+  // When the user clicks anywhere outside of a modal, close it
+  window.onclick = function (event) {
+    if (event.target.className =="modal") {
+	  event.target.style.display = "none";
+    }
   }
 </script>
 
