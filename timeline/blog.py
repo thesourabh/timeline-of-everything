@@ -220,6 +220,9 @@ def delete_event(tid, eid):
     try:
         db = get_db()
         db.execute('DELETE FROM timeline_has WHERE timeline_id = ? AND event_id = ?', (tid, eid))
+        found = db.execute('SELECT count(*) FROM timeline_has WHERE event_id = ?', (eid,)).fetchone()[0]
+        if found == 0:
+            db.execute('DELETE FROM event WHERE id = ?', (eid,))
         db.commit()
     except Exception as e:
         return "FAILED"
