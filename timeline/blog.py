@@ -211,6 +211,20 @@ def delete(id):
     db.execute('DELETE FROM timeline WHERE id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
+    
+    
+
+@bp.route('/<int:tid>/deleteevent/<int:eid>', methods=('GET',))
+@login_required
+def delete_event(tid, eid):
+    """Delete an event."""
+    try:
+        db = get_db()
+        db.execute('DELETE FROM timeline_has WHERE timeline_id = ? AND event_id = ?', (tid, eid))
+        db.commit()
+    except Exception as e:
+        return "FAILED"
+    return "SUCCESS"
 
 @bp.route('/<int:id>/create', methods=('POST',))
 @login_required

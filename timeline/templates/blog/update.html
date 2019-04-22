@@ -82,7 +82,13 @@
       actionBox.classList.add("action-box");
       let editButton = document.createElement("span");
       editButton.appendChild(document.createTextNode("Edit"));
+      let delButton = document.createElement("span");
+      delButton.appendChild(document.createTextNode("Delete"));
+      delButton.onclick = function () {
+        sendDeleteRequest(event.id);
+      };
       actionBox.appendChild(editButton);
+      actionBox.appendChild(delButton);
       a.appendChild(actionBox);
 
 
@@ -127,38 +133,23 @@
     //This should probably be a modal?
   }
 
-  /* //might use this if we have add events here
-  function sendAddEventRequest() {
-    if (!eid) {
-        return;
-    }
+  function sendDeleteRequest (eid) {
     let XHR = new XMLHttpRequest();
     // Define what happens on successful data submission
-    XHR.addEventListener("load", function(event) {
+    XHR.addEventListener("load", function (event) {
       let response = event.target.responseText;
       if (response.startsWith("SUCCESS")) {
-        addForm.reset();
-        let event_json = JSON.parse(response.substring(7));
-        timeline_json.events.push(event_json);
-        create_modal.style.display = "none";
-        event_ids.push(eid);
+        let index = event_ids.indexOf(eid);
+        if (index !== -1) event_ids.splice(index, 1);
         initializeEventList();
-        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
       }
     });
-
-    // Define what happens in case of error
-    XHR.addEventListener("error", function(event) {
-      alert('Oops! Something went wrong.');
+    XHR.addEventListener("error", function (event) {
+      console.log(event);
     });
-
-    // Set up our request
-    XHR.open("GET", "/{{ timeline_id }}/addevent/" + eid);
-
-    // The data sent is what the user provided in the form
+    XHR.open("GET", "/{{ tl.timeline['id'] }}/deleteevent/" + eid);
     XHR.send();
   }
-*/
 </script>
 
 {% else %}

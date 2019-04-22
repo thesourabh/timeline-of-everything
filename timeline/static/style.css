@@ -308,7 +308,8 @@ input[type=submit] {
   top: 14px;
 }
 .search_list_ul li a .action-box span {
-  font-size: 12pt;
+  font-size: 10pt;
+  cursor: pointer;
   margin-right: 10px;
   color: #8e6339;
   text-decoration: underline;
