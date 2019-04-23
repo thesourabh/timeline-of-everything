@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<title>{% block title %}{% endblock %} - Timeline</title>
+<link rel="stylesheet" href="../../static/tailwind.css">
+<link rel="stylesheet" href="../../static/style.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css">
+<script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
+</head>
+
+<body class="block  w-full ">
+    <nav class="w-full   flex-grow flex items-center w-full h-12 justify-space-between">
+        <ul class="flex w-full h-10 pl-2">
+           
+            <button id="btn-term">Terms</button>
+
+            <div id="modal-term-event" class="modal">
+                <div class="modal-content">
+                    <span class="close" id="btn-close-modal">&times;</span>
+                    <div><br>
+                        <p>Don’t misuse our services. For example, don’t interfere with our services or try to access them using a method other than the interface and the instructions that we provide. You may use our services only as permitted by law, including applicable export and re-export control laws and regulations. We may suspend or stop providing our services to you if you do not comply with our terms or policies or if we are investigating suspected misconduct.</p>
+                        <br>
+                        <p>Using our services does not give you ownership of any intellectual property rights in our services or the content you access. You may not use content from our services unless you obtain permission from its owner or are otherwise permitted by law. These terms do not grant you the right to use any branding or logos used in our services. Don’t remove, obscure, or alter any legal notices displayed in or along with our services.</p>
+                        <br>
+                        <p>Our services display some content that is not Timeline of Everything’s. This content is the sole responsibility of the entity that makes it available. We may review content to determine whether it is illegal or violates our policies, and we reserve the right to remove or refuse to display content that we reasonably believe violates our policies or the law. But that does not necessarily mean that we review content, so please don’t assume that we do.</p>
+                        <br>
+                        <p>Some of our services are available on mobile devices. Do not use such services in a way that distracts you and prevents you from obeying traffic or safety laws. </p>
+                    </div>
+                </div>
+            </div>
+            
+        </ul>
+        <ul class="flex w-full justify-end h-10 pl-2">
+            <li><a href="{{ url_for('blog.index') }}">Index</a>
+            {% if g.user %}
+              <li><span>{{ g.user['username'] }}</span>
+              <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+            {% else %}
+              <li><a href="{{ url_for('auth.register') }}">Register</a>
+              <li><a href="{{ url_for('auth.login') }}">Log In</a>
+            {% endif %}
+            
+        </ul>
+    </nav>
+<a href="{{ url_for('blog.index') }}" class=" block mx-auto  pl-2   lg:w-1/3  w-1/2 pt-10">
+    <img src="../../static/logo_color.gif">
+</a>
+<div class="search-area flex  lg:w-1/2 w-3/4 my-4 mx-auto  h-10 pl-2 mt-10" >
+    <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
+
+    <ul id="search_timelines_list_ul" class="search_list_ul">
+    </ul>
+    <button class="border border-grey w-12 hover:bg-grey-light bg-white">
+        <i class="fa fa-search text-grey-dark"></i>
+    </button>
+</div>
+
+<script>
+  let term_modal = document.getElementById('modal-term-event');
+  let term_open = document.getElementById("btn-term");
+  let term_close = document.getElementById("btn-close-modal");
+
+  term_open.onclick = function () {
+      
+    term_modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  term_close.onclick = function () {
+    term_modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of a modal, close it
+  window.onclick = function (event) {
+    if (event.target.className =="modal") {
+      event.target.style.display = "none";
+    }
+  }
+
+    let search_timelines_list = JSON.parse({{ timelines | tojson | safe }});
+    let search_timelines_list_ul = document.getElementById('search_timelines_list_ul');
+    let search_timelines_input = document.getElementById('search_timelines_input');
+
+    window.onclick = function (event) {
+        if (event.target == search_timelines_input) {
+        search_timelines_list_ul.style.display = 'block';
+        } else {
+        search_timelines_list_ul.style.display = "none";
+        }
+    };
+    search_timelines_list.forEach(function (timeline) {
+        let a = document.createElement("a");
+        a.appendChild(document.createTextNode(timeline.title));
+        a.setAttribute('href', '/' + timeline.id + '/view');
+        let li = document.createElement("li");
+        li.appendChild(a);
+        // li.setAttribute("id", "element4"); // added line
+        search_timelines_list_ul.appendChild(li);
+    });
+
+    search_timelines_list_ul.style.top = search_timelines_input.style.height;
+
+    function searchTimelinesFilter() {
+        let filter, li, a, i, txtValue;
+        filter = search_timelines_input.value.toUpperCase();
+        li = search_timelines_list_ul.getElementsByTagName("li");
+        for (i = 0; i < li.length; i++) {
+        a = li[i].getElementsByTagName("a")[0];
+        txtValue = a.textContent || a.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+        }
+    }
+</script>
+</body>
+</html>

@@ -12,12 +12,19 @@ import json
 bp = Blueprint('blog', __name__)
 
 
-@bp.route('/')
+@bp.route('/index')
 def index():
     """Show all the posts"""
     timelines = sqlarray_to_json(get_all_from_all_timelines())
     print(timelines)
-    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))
+    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))\
+
+@bp.route('/')
+def homePage():
+    """Show all the posts"""
+    timelines = sqlarray_to_json(get_all_from_all_timelines())
+    print(timelines)
+    return render_template('blog/homePage.html', tls=timelines, timelines = json.dumps(timelines))
 
 
 def get_timeline(id):

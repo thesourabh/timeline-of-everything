@@ -3,7 +3,7 @@
 {% block header %}
   <h1>{% block title %}{{ tl.timeline['title'] }}{% endblock %}</h1>
     {% if g.user['id'] == tl.timeline['author_id'] %}
-        <a class="action" href="{{ url_for('blog.updateTimeline', id=tl.timeline['id']) }}">Edit</a>
+        <a class="action" href="{{ url_for('blog.updateTimeline', id=tl.timeline['id']) }}"><b>Edit</b></a>
     {% endif %}
 {% endblock %}
 

@@ -91,10 +91,10 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
-            # store the user id in a new session and return to the index
+            # store the user id in a new session and return to the home page
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            return redirect(url_for('blog.index'))
 
         flash(error)
 

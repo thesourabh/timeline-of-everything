@@ -9,12 +9,12 @@
 
 
 <nav class="bg-grey w-full block  flex-grow lg:flex lg:items-center lg:w-auto">
-  <a href="{{ url_for('index') }}" class=" block mx-auto  pl-2 lg:my-4  w-1/2 lg:inline-block lg:w-1/4 ">
+    <a href="{{ url_for('index') }}" class=" block mx-auto  pl-2 pt-2 lg:my-4  w-24 lg:inline-block lg:w-1/4 ">
     <img src="../static/timeline_logo.png" width="100">
   </a>
   <!--Search Bar-->
   {% if timelines is defined %}
-  <div class="search-area flex  w-4/5 my-4 mx-auto lg:w-1/2  lg:pl-10 h-10 pl-2" >
+  <div class="flex  w-4/5 my-4 mx-auto lg:w-2/4 lg:mt-2  lg:pl-10 lg:h-10 pl-2  h-12 pb-2" >
     <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
 
     <ul id="search_timelines_list_ul" class="search_list_ul">
@@ -64,7 +64,8 @@
     }
   </script>
   {% endif %}
-  <ul class="flex lg:justify-end w-4/5 my-4 mx-auto lg:w-1/4  h-10 pl-2 ">
+  <ul class="flex fixed pin-t pin-r lg:relative lg:justify-end my-4 mx-auto lg:w-1/4  h-10 pl-2">
+    <li><a href="{{ url_for('blog.index') }}">Index</a>
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
       <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
