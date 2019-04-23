@@ -276,6 +276,30 @@ def create_event(id):
             return e
     return "Only POST requests supported"
     
+
+@bp.route('/<int:eid>/updateevent', methods=('POST',))
+@login_required
+def update_event(eid):
+    try:
+        title = request.form['title']
+        summary = request.form['summary']
+        start_date = request.form['startDate'] + ' 12:00:00'
+        end_date = request.form['endDate'] + ' 12:00:00' if request.form['endDate'] else ''
+        image_url = request.form['image']
+        credit = request.form['credit']
+        error = None
+    
+        db = get_db()
+        db.execute(
+            'UPDATE event SET title = ?, summary = ?, startDate = ?, endDate = ?, image = ?, credit = ? WHERE id = ?',
+            (title, summary, start_date, end_date, image_url, credit, eid)
+        )
+        db.commit()
+        return "SUCCESS"
+    except Exception as e:
+        print(e)
+        return "FAILURE"
+    
     
 @bp.route('/<int:tid>/addevent/<int:eid>', methods=('GET',))
 @login_required

@@ -51,9 +51,9 @@
         <span class="close" id="btn-close-modal">&times;</span>
         <form id="form-edit-event" >
             <label for="event_title">Title</label>
-            <input name="event_title" id="event_title" class="border border-grey border-1 border-solid" value="{{ request.form['title'] }}" required>
+            <input name="title" id="event_title" class="border border-grey border-1 border-solid" value="{{ request.form['title'] }}" required>
             <label for="event_summary">Summary</label>
-            <textarea name="event_summary" id="event_summary" class="border border-grey border-1 border-solid" >{{ request.form['summary'] }}</textarea>
+            <textarea name="summary" id="event_summary" class="border border-grey border-1 border-solid" >{{ request.form['summary'] }}</textarea>
             <div class="date-row">
                 <div class="date-container">
                     <label for="start-date">Start Date</label>
@@ -118,7 +118,7 @@
       editButton.appendChild(document.createTextNode("Edit"));
 	  
 	  editButton.onclick = function () {
-	  
+	    eid = event.id;
 		edit_modal.style.display = "block";
 		document.getElementById('event_title').value = event.title;
 		if(typeof event.summary != 'undefined')
@@ -210,12 +210,9 @@
     XHR.addEventListener("load", function(event) {
       let response = event.target.responseText;
       if (response.startsWith("SUCCESS")) {
-        edit_form.reset();
-        let event_json = JSON.parse(response.substring(7));
-        timeline_json.events.push(event_json);
-        create_modal.style.display = "none";
-        window.timeline = new TL.Timeline('timeline-embed', timeline_json, options);
+        edit_modal.style.display = "none";
       }
+      location.reload();
     });
 
     // Define what happens in case of error
@@ -224,7 +221,7 @@
     });
 
     // Set up our request
-    XHR.open("POST", "/{{ timeline_id }}/create");
+    XHR.open("POST", "/" + eid + "/updateevent");
 
     // The data sent is what the user provided in the form
     XHR.send(FD);
