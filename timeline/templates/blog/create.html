@@ -10,6 +10,8 @@
     <input class="border border-grey border-1 border-solid" name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="summary">Summary</label>
     <textarea class="border border-grey border-1 border-solid" name="summary" id="summary">{{ request.form['summary'] }}</textarea>
+    <label for="title">Background Image</label>
+    <input class="border border-grey border-1 border-solid" name="background_image" id="background_image" placeholder="Optional">
     <input type="submit" value="Save">
   </form>
 {% endblock %}

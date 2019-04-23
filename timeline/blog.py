@@ -26,7 +26,7 @@ def get_timeline(id):
     """
     db = get_db()
     timeline = db.execute(
-        'SELECT t.id, title, summary, created, author_id, username'
+        'SELECT t.id, title, summary, background_image, created, author_id, username'
         ' FROM timeline t JOIN user u ON t.author_id = u.id'
         ' WHERE t.id = ?',
         (id,)
@@ -128,6 +128,9 @@ def make_timeline_json(tl):
              'text': {
                'headline': tl['timeline']['title'],
                'text': tl['timeline']['summary']
+             },
+             'background': {
+                'url': tl['timeline']['background_image']
              }
            },
            'events': []
@@ -138,11 +141,11 @@ def make_timeline_json(tl):
     
 
 
-def create_timeline(title, summary, db):
+def create_timeline(title, summary, background_image, db):
     t = db.execute(
-        'INSERT INTO timeline (title, summary, author_id)'
-        ' VALUES (?, ?, ?)',
-        (title, summary, g.user['id'])
+        'INSERT INTO timeline (title, summary, background_image, author_id)'
+        ' VALUES (?, ?, ?, ?)',
+        (title, summary, background_image, g.user['id'])
     )
     return t
 
@@ -154,6 +157,7 @@ def create():
     if request.method == 'POST':
         title = request.form['title']
         summary = request.form['summary']
+        background_image = request.form['background_image']
         error = None
 
         if not title:
@@ -163,7 +167,7 @@ def create():
             flash(error)
         else:
             db = get_db()
-            t = create_timeline(title, summary, db)
+            t = create_timeline(title, summary, background_image, db)
             db.commit()
             return redirect(url_for('blog.view', id=t.lastrowid))
             
@@ -180,6 +184,7 @@ def updateTimeline(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        background_image = request.form['background_image']
         error = None
 
         if not title:
@@ -190,8 +195,8 @@ def updateTimeline(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE timeline SET title = ?, summary = ? WHERE id = ?',
-                (title, body, id)
+                'UPDATE timeline SET title = ?, summary = ?, background_image = ? WHERE id = ?',
+                (title, body, background_image, id)
             )
             db.commit()
             return view(id)
@@ -328,8 +333,9 @@ def merge_timelines(id1, id2):
     timeline1 = get_timeline(id1)
     timeline2 = get_timeline(id2)
     new_title = "Merge of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    new_background_image = timeline1['timeline']['background_image'] or timeline2['timeline']['background_image'] or ''
     db = get_db()
-    t = create_timeline(new_title, new_title, db)
+    t = create_timeline(new_title, new_title, new_background_image, db)
     new_timeline_id = t.lastrowid
     events_to_add = set()
     for event in timeline1['events']:
@@ -347,8 +353,9 @@ def compare_timelines(id1, id2):
     timeline1 = get_timeline(id1)
     timeline2 = get_timeline(id2)
     new_title = "Comparison of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    new_background_image = timeline1['timeline']['background_image'] or timeline2['timeline']['background_image'] or ''
     db = get_db()
-    t = create_timeline(new_title, new_title, db)
+    t = create_timeline(new_title, new_title, new_background_image, db)
     new_timeline_id = t.lastrowid
     events_to_add = set()
     for event in timeline1['events']:
@@ -366,8 +373,9 @@ def contrast_timelines(id1, id2):
     timeline1 = get_timeline(id1)
     timeline2 = get_timeline(id2)
     new_title = "Contrast of " + timeline1['timeline']['title'] + " and " + timeline2['timeline']['title']
+    new_background_image = timeline1['timeline']['background_image'] or timeline2['timeline']['background_image'] or ''
     db = get_db()
-    t = create_timeline(new_title, new_title, db)
+    t = create_timeline(new_title, new_title, new_background_image, db)
     new_timeline_id = t.lastrowid
     events_to_add = set()
 

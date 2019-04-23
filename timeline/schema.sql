@@ -18,6 +18,7 @@ CREATE TABLE timeline (
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   title TEXT NOT NULL,
   summary TEXT NOT NULL,
+  background_image TEXT,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 
@@ -41,7 +42,7 @@ CREATE TABLE timeline_has (
 INSERT INTO user values(1, 'admin', 'admin');
 INSERT INTO user values(2, 'sourabh', 'sourabh');
 
-INSERT INTO timeline values(1, 1, '2019-03-06 13:23:44', 'War of Independence', 'A war was fought for Independence.');
+INSERT INTO timeline values(1, 1, '2019-03-06 13:23:44', 'War of Independence', 'A war was fought for Independence.', '');
 INSERT INTO event values(1, "Declaration of Independence", "Independence was declared", '1776-07-04 12:00:00', '', '', 'Philadelphia');
 INSERT INTO event values(2, "Siege of Yorktown", "Yorktown was under siege", '1781-09-28 12:00:00', '1781-10-19 12:00:00', 'https://upload.wikimedia.org/wikipedia/commons/7/77/Redbout-10.jpg', 'Yorktown');
 

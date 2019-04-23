@@ -18,6 +18,8 @@
         <input class="h-10 border border-grey border-1 border-solid" name="title" id="title" value="{{ request.form['title'] or tl.timeline['title'] }}" required>
         <label class="mt-4" for="body">Body</label>
         <textarea class="h-10 border border-grey border-1 border-solid" name="body" id="body">{{ request.form['body'] or tl.timeline['summary'] }}</textarea>
+        <label for="title">Background Image</label>
+        <input class="h-10 border border-grey border-1 border-solid" name="background_image" id="background_image" value="{{ request.form['background_image'] or tl.timeline['background_image'] }}">
         <input class="w-full h-12 bg-blue hover:bg-blue-dark text-white font-bold rounded" type="submit" value="Save">
       </form>
 
