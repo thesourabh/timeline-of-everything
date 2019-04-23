@@ -3,7 +3,8 @@
   margin: 0;
 }
 html {
-  font-family: Helvetica, sans-serif;
+  font-family: Source Sans Pro, Helvetica, sans-serif;
+  font-weight: 400;
   height: 100%;
   width: 100%;
 }
@@ -14,12 +15,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #8e6339;
+  color: #555;
   margin: 1rem 0;
 }
 
 a {
-  color: #aa7644;
+  text-decoration: none;
 }
 
 hr {
@@ -102,7 +103,7 @@ nav ul li a, header .action {
   align-items: flex-end;
 }
 
-.content > header h1 {
+.content > header h1, .content > header h2 {
   flex: auto;
   margin: 1rem 0 0.25rem 0;
 }
@@ -307,10 +308,31 @@ input[type=submit] {
   font-size: 12pt;
   top: 14px;
 }
+
 .search_list_ul li a .action-box span {
   font-size: 10pt;
   cursor: pointer;
   margin-right: 10px;
   color: #8e6339;
   text-decoration: underline;
+}
+
+.card-image {
+  object-fit: none;
+  object-position: center;
+}
+
+.edit-icon {
+  background-image: url("icons/edit.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px;
+  position: absolute;
+  right: 1rem;
+  top: 13rem;
+  width: 20px;
+  height: 20px;
+  padding: 15px;
+  border: 1px solid;
+  border-radius: 50%;
 }

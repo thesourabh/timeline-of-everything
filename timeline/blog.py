@@ -15,7 +15,7 @@ bp = Blueprint('blog', __name__)
 @bp.route('/')
 def index():
     """Show all the posts"""
-    timelines = sqlarray_to_json(get_all_timelines())
+    timelines = sqlarray_to_json(get_all_from_all_timelines())
     print(timelines)
     return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))
 
@@ -50,6 +50,13 @@ def get_all_timelines():
     ).fetchall()
     return timelines
     
+def get_all_from_all_timelines():
+    db = get_db()
+    timelines = db.execute(
+        'SELECT id, title, summary, background_image, author_id FROM timeline'
+    ).fetchall()
+    return timelines
+    
     
 def sqlarray_to_json_event(array):
     json_array = []
@@ -66,6 +73,10 @@ def sqlarray_to_json(array):
         entry = {'id': object['id'], 'title': object['title']}
         if 'author_id' in object.keys():
             entry['author_id'] = object['author_id']
+        if 'background_image' in object.keys():
+            entry['background_image'] = object['background_image'] or url_for('static', filename='default_background.jpg')
+        if 'summary' in object.keys():
+            entry['summary'] = object['summary']
         json_array.append(entry)
     return json_array
     
@@ -130,7 +141,7 @@ def make_timeline_json(tl):
                'text': tl['timeline']['summary']
              },
              'background': {
-                'url': tl['timeline']['background_image']
+                'url': tl['timeline']['background_image'] or url_for('static', filename='default_background.jpg')
              }
            },
            'events': []
