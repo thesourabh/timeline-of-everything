@@ -3,7 +3,7 @@
 {% block header %}
   <h2>{% block title %}List of Timelines{% endblock %}</h2>
   {% if g.user %}
-    <a class="action" href="{{ url_for('blog.create') }}"><b>Create New Timeline</b></a>
+    <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
 {% endblock %}
 
@@ -16,19 +16,16 @@
         <img class="card-image w-full h-48" src="{{ tl['background_image'] }}" alt="Sunset in the mountains">
         <div class="px-6 py-4">
           <div class="font-bold text-grey-darkest text-xl mb-2">{{ tl['title'] }}</div>
-          <p class="text-grey-darker text-base">
+          <p class="card-summary text-grey-darker text-base">
             {{ tl['summary'] }}
           </p>
         </div>
 
       </a>
-      <div class="tags px-6 py-4">
-        <!--
-        Tags would go here
-        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#photography</span>
-        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#travel</span>
-        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker">#winter</span>
-        -->
+      <div class="card-tags px-6">
+      {% for tag in tl['tags'] %}
+        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#{{ tag }}</span>
+      {% endfor %}
       </div>
       {% if g.user['id'] == tl['author_id'] %}
       <a class="action edit-icon" href="{{ url_for('blog.updateTimeline', id=tl['id']) }}"></a>

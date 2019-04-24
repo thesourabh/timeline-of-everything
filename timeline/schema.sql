@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS timeline;
 DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS timeline_has;
+DROP TABLE IF EXISTS timeline_tags;
+DROP TABLE IF EXISTS tags;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,6 +37,16 @@ CREATE TABLE event (
 CREATE TABLE timeline_has (
     timeline_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL
+);
+
+CREATE TABLE timeline_tags (
+    timeline_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL
+);
+
+CREATE TABLE tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tag TEXT NOT NULL
 );
 
 

@@ -15,7 +15,12 @@ bp = Blueprint('blog', __name__)
 @bp.route('/index')
 def index():
     """Show all the posts"""
-    timelines = sqlarray_to_json(get_all_from_all_timelines())
+    all_tags = get_all_tags()
+    print(all_tags)
+    all_timeline_tags = get_all_timeline_tags()
+    print(all_timeline_tags)
+    tags_to_show = get_tags_to_show(all_tags, all_timeline_tags)
+    timelines = sqlarray_to_json(get_all_from_all_timelines(), tags_to_show)
     print(timelines)
     return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))\
 
@@ -26,6 +31,15 @@ def homePage():
     print(timelines)
     return render_template('blog/homePage.html', tls=timelines, timelines = json.dumps(timelines))
 
+def get_tags_to_show(all, tt):
+    d = {}
+    for tid in tt:
+        arr = []
+        for tagid in tt[tid]:
+            arr.append(all[tagid])
+        d[tid] = arr
+    return d
+    
 
 def get_timeline(id):
     """Get a timeline by id.
@@ -74,16 +88,20 @@ def sqlarray_to_json_event(array):
         json_array.append(entry)
     return json_array
     
-def sqlarray_to_json(array):
+def sqlarray_to_json(array, tags=None):
     json_array = []
+    print(tags)
     for object in array:
-        entry = {'id': object['id'], 'title': object['title']}
+        id = object['id']
+        entry = {'id': id, 'title': object['title']}
         if 'author_id' in object.keys():
             entry['author_id'] = object['author_id']
         if 'background_image' in object.keys():
             entry['background_image'] = object['background_image'] or url_for('static', filename='default_background.jpg')
         if 'summary' in object.keys():
             entry['summary'] = object['summary']
+        if tags and id in tags:
+            entry['tags'] = tags[id]
         json_array.append(entry)
     return json_array
     
@@ -187,6 +205,7 @@ def create():
             db = get_db()
             t = create_timeline(title, summary, background_image, db)
             db.commit()
+            process_hash_tags(t.lastrowid, summary)
             return redirect(url_for('blog.view', id=t.lastrowid))
             
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
@@ -201,7 +220,7 @@ def updateTimeline(id):
 
     if request.method == 'POST':
         title = request.form['title']
-        body = request.form['body']
+        summary = request.form['body']
         background_image = request.form['background_image']
         error = None
 
@@ -214,9 +233,10 @@ def updateTimeline(id):
             db = get_db()
             db.execute(
                 'UPDATE timeline SET title = ?, summary = ?, background_image = ? WHERE id = ?',
-                (title, body, background_image, id)
+                (title, summary, background_image, id)
             )
             db.commit()
+            process_hash_tags(id, summary)
             return view(id)
     
     events = json.dumps(sqlarray_to_json_event(get_all_from_all_events()))
@@ -225,6 +245,66 @@ def updateTimeline(id):
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids}, timelines=timelines)
 
+def get_all_tags():
+    db = get_db()
+    return get_tag_dict(db.execute('SELECT * FROM tags').fetchall())
+    
+def get_all_timeline_tags():
+    db = get_db()
+    d = {}
+    tt = db.execute('SELECT * FROM timeline_tags').fetchall()
+    for elem in tt:
+        tid = elem['timeline_id']
+        if tid in d:
+            d[tid].append(elem['tag_id'])
+        else:
+            d[tid] = [elem['tag_id']]
+    return d
+
+
+def get_tag_dict(arr):
+    d = {}
+    for elem in arr:
+        d[elem['tag']] = elem['id']
+        d[elem['id']] = elem['tag']
+    return d
+    
+def get_tag_set(arr):
+    s = set()
+    for elem in arr:
+        s.add(elem['tag_id'])
+    return s
+
+def process_hash_tags(tid, s):
+    new_tags = set(part[1:] for part in s.split() if part.startswith('#'))
+    db = get_db()
+    all_tags = get_all_tags()
+    existing_tags = get_tag_set(db.execute('SELECT * FROM timeline_tags WHERE timeline_id = ?', (tid,)).fetchall())
+    print(new_tags)
+    print(existing_tags)
+    print(all_tags)
+    current_tags = set(all_tags[tag] for tag in existing_tags)
+    removed_tags = current_tags - new_tags
+    added_tags = new_tags - current_tags
+    for tag in added_tags:
+        if tag not in all_tags:
+            t = db.execute(
+                     'INSERT INTO tags (tag)'
+                     ' VALUES (?)',
+                     (tag,)
+                 )
+            all_tags[tag] = t.lastrowid
+            all_tags[t.lastrowid] = tag
+        t = db.execute(
+                'INSERT INTO timeline_tags'
+                ' VALUES (?, ?)',
+                (tid, all_tags[tag])
+            )
+    for tag in removed_tags:
+        db.execute('DELETE FROM timeline_tags WHERE timeline_id = ? AND tag_id = ?', (tid, all_tags[tag]))
+    print(all_tags)
+    db.commit()
+        
 
 @bp.route('/<int:id>/view', methods=('GET',))
 def view(id):
