@@ -38,8 +38,6 @@ def get_tagged_timelines(tag):
     tag_row = db.execute('SELECT id FROM tags WHERE tag = ?', (tag,)).fetchone()
     if not tag_row:
         return []
-    print(tag_row)
-    print(tag_row['id'])
     res = db.execute(
         'SELECT id, title, summary, background_image, author_id'
         ' FROM timeline_tags JOIN timeline ON id = timeline_id'
@@ -53,7 +51,6 @@ def get_tagged_timelines(tag):
 def homePage():
     """Show all the posts"""
     timelines = sqlarray_to_json(get_all_from_all_timelines())
-    print(timelines)
     return render_template('blog/homePage.html', tls=timelines, timelines = json.dumps(timelines))
 
 def get_tags_to_show(all, tt):
@@ -115,7 +112,6 @@ def sqlarray_to_json_event(array):
     
 def sqlarray_to_json(array, tags=None):
     json_array = []
-    print(tags)
     for object in array:
         id = object['id']
         entry = {'id': id, 'title': object['title']}
@@ -265,7 +261,6 @@ def updateTimeline(id):
             return view(id)
     
     events = json.dumps(sqlarray_to_json_event(get_all_from_all_events()))
-    print(events)
     event_ids = [event['id'] for event in tl['events']]
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     return render_template('blog/update.html', tl={'timeline': tl['timeline'], 'events': events, 'event_ids': event_ids}, timelines=timelines)
@@ -305,9 +300,6 @@ def process_hash_tags(tid, s):
     db = get_db()
     all_tags = get_all_tags()
     existing_tags = get_tag_set(db.execute('SELECT * FROM timeline_tags WHERE timeline_id = ?', (tid,)).fetchall())
-    print(new_tags)
-    print(existing_tags)
-    print(all_tags)
     current_tags = set(all_tags[tag] for tag in existing_tags)
     removed_tags = current_tags - new_tags
     added_tags = new_tags - current_tags
@@ -327,7 +319,6 @@ def process_hash_tags(tid, s):
             )
     for tag in removed_tags:
         db.execute('DELETE FROM timeline_tags WHERE timeline_id = ? AND tag_id = ?', (tid, all_tags[tag]))
-    print(all_tags)
     db.commit()
         
 
