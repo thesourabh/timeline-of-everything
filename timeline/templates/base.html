@@ -14,12 +14,12 @@
   </a>
   <!--Search Bar-->
   {% if timelines is defined %}
-  <div class="flex  w-4/5 my-4 mx-auto lg:w-2/4 lg:mt-2  lg:pl-10 lg:h-10 pl-2  h-12 pb-2" >
+  <div class="search-area flex w-4/5 my-4 mx-auto lg:w-2/4 lg:mt-2  lg:pl-10 lg:h-10 pl-2  h-12 pb-2" >
     <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
 
     <ul id="search_timelines_list_ul" class="search_list_ul">
     </ul>
-    <button class="border border-grey w-12 hover:bg-grey-light bg-white">
+    <button class="border border-grey w-12 hover:bg-grey-light bg-white" id="search_timelines_button">
         <i class="fa fa-search text-grey-dark"></i>
     </button>
   </div>
