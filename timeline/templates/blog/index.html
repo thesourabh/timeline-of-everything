@@ -1,7 +1,15 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h2>{% block title %}List of Timelines{% endblock %}</h2>
+  <h2>
+  {% block title %}
+    {% if tag %}
+      Results for tag #{{ tag }}
+    {% else %}
+      List of Timelines
+    {% endif %}
+  {% endblock %}
+  </h2>
   {% if g.user %}
     <a class="action" href="{{ url_for('blog.create') }}">New</a>
   {% endif %}
@@ -24,7 +32,9 @@
       </a>
       <div class="card-tags px-6">
       {% for tag in tl['tags'] %}
-        <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#{{ tag }}</span>
+        <a href="{{ url_for('blog.search', terms=tag) }}">
+          <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#{{ tag }}</span>
+        </a>
       {% endfor %}
       </div>
       {% if g.user['id'] == tl['author_id'] %}

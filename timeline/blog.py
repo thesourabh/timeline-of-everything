@@ -16,13 +16,38 @@ bp = Blueprint('blog', __name__)
 def index():
     """Show all the posts"""
     all_tags = get_all_tags()
-    print(all_tags)
     all_timeline_tags = get_all_timeline_tags()
-    print(all_timeline_tags)
     tags_to_show = get_tags_to_show(all_tags, all_timeline_tags)
     timelines = sqlarray_to_json(get_all_from_all_timelines(), tags_to_show)
-    print(timelines)
-    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))\
+    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines))
+    
+
+
+@bp.route('/tagged/<terms>', methods=('GET',))
+@login_required
+def search(terms):
+    all_tags = get_all_tags()
+    all_timeline_tags = get_all_timeline_tags()
+    tags_to_show = get_tags_to_show(all_tags, all_timeline_tags)
+    timelines = sqlarray_to_json(get_tagged_timelines(terms), tags_to_show)
+    return render_template('blog/index.html', tls=timelines, timelines = json.dumps(timelines), tag=terms)
+    
+    
+def get_tagged_timelines(tag):
+    db = get_db()
+    tag_row = db.execute('SELECT id FROM tags WHERE tag = ?', (tag,)).fetchone()
+    if not tag_row:
+        return []
+    print(tag_row)
+    print(tag_row['id'])
+    res = db.execute(
+        'SELECT id, title, summary, background_image, author_id'
+        ' FROM timeline_tags JOIN timeline ON id = timeline_id'
+        ' WHERE tag_id = ?',
+        (tag_row['id'],)
+    ).fetchall()
+    return res
+    
 
 @bp.route('/')
 def homePage():
