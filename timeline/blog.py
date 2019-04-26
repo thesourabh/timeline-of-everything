@@ -281,6 +281,10 @@ def get_all_timeline_tags():
             d[tid] = [elem['tag_id']]
     return d
 
+def get_username(uid):
+    db = get_db()
+    usr = db.execute('SELECT username FROM user WHERE id = ?', (uid,)).fetchone()
+    return usr['username']
 
 def get_tag_dict(arr):
     d = {}
@@ -330,7 +334,11 @@ def view(id):
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     events = json.dumps(sqlarray_to_json(get_all_from_all_events()))
     event_ids = [event['id'] for event in tl['events']]
-    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'timeline_json': timeline_json, 'events': events, 'event_ids': event_ids}, timelines=timelines)
+    aid = tl['timeline']['author_id']
+    print(aid)
+    username = get_username(aid)
+    print(username)
+    return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'username' : username, 'timeline_json': timeline_json, 'events': events, 'event_ids': event_ids}, timelines=timelines)
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))

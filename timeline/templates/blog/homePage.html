@@ -10,6 +10,7 @@
 </head>
 
 <body class="block  w-full ">
+    <!-- Navigation -->
     <nav class="w-full   flex-grow flex items-center w-full h-12 justify-space-between">
         <ul class="flex w-full h-10 pl-2">
            
@@ -31,7 +32,10 @@
             </div>
             
         </ul>
-        <ul class="flex w-full justify-end h-10 pl-2">
+        <ul id="account" class="flex w-full justify-end h-10 pl-2">
+          <li class="px-4 py-2" id="reg">Register </li>
+          <li class="px-4 py-2" id="login">Log In </li>
+            <!--
             <li><a href="{{ url_for('blog.index') }}">Index</a>
             {% if g.user %}
               <li><span>{{ g.user['username'] }}</span>
@@ -40,12 +44,63 @@
               <li><a href="{{ url_for('auth.register') }}">Register</a>
               <li><a href="{{ url_for('auth.login') }}">Log In</a>
             {% endif %}
-            
+            -->
         </ul>
+
+        
     </nav>
+
+      <div id="login_modal" style = "z-index: 100; width: 320px" class="w-full max-w-xs absolute pin-r hidden">
+          <form action="{{ url_for('auth.login') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
+              <div class="mb-4">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="usrname">
+                    Username
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="usrname" type="text" placeholder="Username" name="username">
+              </div>
+              <div class="mb-6">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="passwrd">
+                    Password
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="passwrd" type="password" name="password" placeholder="******************">
+              </div>
+              <div class="flex items-center justify-between">
+                <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Sign In
+                </button>
+                <a class="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker" href="#">
+                    Forgot Password?
+                </a>
+              </div>
+          </form>
+      </div>
+      <div id="reg_modal" style = "z-index: 100; width: 320px" class="w-full max-w-xs absolute pin-r hidden">
+        <form action = "{{ url_for('auth.register') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
+            <div class="mb-4">
+              <label class="block text-grey-darker text-sm font-bold mb-2" for="username">
+                  Username
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
+            </div>
+            <div class="mb-6">
+              <label class="block text-grey-darker text-sm font-bold mb-2" for="password">
+                  Password
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" placeholder="******************">
+            </div>
+            <div class="flex items-center justify-between">
+              <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Register
+            </button>
+            </div>
+        </form>
+      </div>
+    
+<!-- LOGO-->
 <a href="{{ url_for('blog.index') }}" class=" block mx-auto  pl-2   lg:w-1/3  w-1/2 pt-10">
     <img src="../../static/logo_color.gif">
 </a>
+<!-- Search -->
 <div class="search-area flex  lg:w-1/2 w-3/4 my-4 mx-auto  h-10 pl-2 mt-10" >
     <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
 
@@ -61,6 +116,33 @@
   let term_open = document.getElementById("btn-term");
   let term_close = document.getElementById("btn-close-modal");
 
+  //control the account page  
+  let term_login = document.getElementById("login");
+  let term_login_modal  = document.getElementById("login_modal");
+
+  let term_reg = document.getElementById("reg");
+  let term_reg_modal  = document.getElementById("reg_modal");
+
+  term_reg.onclick = function () {
+      if(term_login_modal.style.display == "none" || !term_login_modal.style.display) {
+        term_login_modal.style.display = "none";
+        term_reg_modal.style.display = "block";
+      } else {
+        term_reg_modal.style.display = "none";
+      }
+    
+  }
+
+  term_login.onclick = function () {
+      if(term_login_modal.style.display == "none" || !term_reg_modal.style.display) {
+        term_reg_modal.style.display = "none";
+        term_login_modal.style.display = "block";
+      } else {
+        term_login_modal.style.display = "none";
+      }
+    
+  }
+
   term_open.onclick = function () {
       
     term_modal.style.display = "block";
@@ -69,13 +151,6 @@
   // When the user clicks on <span> (x), close the modal
   term_close.onclick = function () {
     term_modal.style.display = "none";
-  }
-
-  // When the user clicks anywhere outside of a modal, close it
-  window.onclick = function (event) {
-    if (event.target.className =="modal") {
-      event.target.style.display = "none";
-    }
   }
 
     let search_timelines_list = JSON.parse({{ timelines | tojson | safe }});
@@ -87,6 +162,15 @@
         search_timelines_list_ul.style.display = 'block';
         } else {
         search_timelines_list_ul.style.display = "none";
+        }
+
+        if (event.target.nodeName == "BODY") {
+            term_reg_modal.style.display = "none";
+            term_login_modal.style.display = "none";
+        }
+        else if(!(event.target.id == "reg" || event.target.id == "login" || event.target.parentElement == term_reg_modal || event.target.parentElement == term_login_modal || event.target.parentElement.parentElement.parentElement == term_reg_modal || event.target.parentElement.parentElement.parentElement == term_login_modal)){
+            term_reg_modal.style.display = "none";
+            term_login_modal.style.display = "none";
         }
     };
     search_timelines_list.forEach(function (timeline) {
@@ -115,6 +199,8 @@
         }
         }
     }
+
+    
 </script>
 </body>
 </html>
