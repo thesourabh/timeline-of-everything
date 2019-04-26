@@ -334,10 +334,7 @@ def view(id):
     timelines = json.dumps(sqlarray_to_json(get_all_timelines()))
     events = json.dumps(sqlarray_to_json(get_all_from_all_events()))
     event_ids = [event['id'] for event in tl['events']]
-    aid = tl['timeline']['author_id']
-    print(aid)
-    username = get_username(aid)
-    print(username)
+    username = get_username(tl['timeline']['author_id'])
     return render_template('blog/view.html', tl={'timeline': tl['timeline'], 'username' : username, 'timeline_json': timeline_json, 'events': events, 'event_ids': event_ids}, timelines=timelines)
 
 
