@@ -30,7 +30,7 @@
         </div>
 
       </a>
-      <div class="card-tags px-6">
+      <div class="card-tags px-6 mb-2">
       {% for tag in tl['tags'] %}
         <a href="{{ url_for('blog.search', terms=tag) }}">
           <span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">#{{ tag }}</span>
