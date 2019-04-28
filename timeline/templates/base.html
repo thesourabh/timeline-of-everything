@@ -8,13 +8,131 @@
 <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>
 
 
-<nav class="bg-grey w-full block  flex-grow lg:flex lg:items-center lg:w-auto">
-    <a href="{{ url_for('index') }}" class=" block mx-auto  pl-2 pt-2 lg:my-4  w-24 lg:inline-block lg:w-1/4 ">
-    <img src="../static/timeline_logo.png" width="100">
+<nav class="bg-grey w-full flex  flex-grow  lg:items-center lg:w-auto p-0">
+    <a href="{{ url_for('index') }}" class=" block mx-auto  pl-2 lg:my-4  h-full lg:inline-block ">
+    <img src="../static/timeline_logo.png" width="150">
   </a>
+
+<div style = "z-index: 99" class="w-full  flex-row-reverse lg:flex content-center pl-5">
+
+
+  <ul style = "z-index: 100" class="flex w-full pin-t pin-r lg:justify-end my-4 mx-auto lg:w-auto h-10">
+    <li class="px-4"><a href="{{ url_for('blog.index') }}">Index</a></li>
+  {% if g.user %}
+    <ul id="account" class="flex w-full justify-end h-10">
+      <li><span>{{ g.user['username'] }}</span></li>
+      <li class="pr-4"><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+    </ul>
+  {% else %}
+      <ul id="account" class="flex w-full justify-end h-10">
+          <li class="px-4 py-2" id="reg">Register </li>
+          <li style = "width: 75px" class="px-4 py-2" id="login">Log In </li>
+      </ul>
+
+      <div style = "z-index: 101" id="login_modal" style = "width: 320px" class="my-10 w-full max-w-xs absolute pin-r hidden">
+          <form action="{{ url_for('auth.login') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
+              <div class="mb-4">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="usrname">
+                    Username
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="usrname" type="text" placeholder="Username" name="username">
+              </div>
+              <div class="mb-6">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="passwrd">
+                    Password
+                </label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="passwrd" type="password" name="password" placeholder="******************">
+              </div>
+              <div class="flex items-center justify-between">
+                <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    Sign In
+                </button>
+                <a class="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker" href="#">
+                    Forgot Password?
+                </a>
+              </div>
+          </form>
+      </div>
+      <div style = "z-index: 101" id="reg_modal" style = "width: 320px" class="my-10 w-full max-w-xs absolute pin-r hidden">
+        <form action = "{{ url_for('auth.register') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
+            <div class="mb-4">
+              <label class="block text-grey-darker text-sm font-bold mb-2" for="username">
+                  Username
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
+            </div>
+            <div class="mb-6">
+              <label class="block text-grey-darker text-sm font-bold mb-2" for="password">
+                  Password
+              </label>
+              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" placeholder="******************">
+            </div>
+            <div class="flex items-center justify-between">
+              <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                Register
+            </button>
+            </div>
+        </form>
+      </div>
+      <script>
+        let term_modal = document.getElementById('modal-term-event');
+
+        //control the account page  
+        let term_login = document.getElementById("login");
+        let term_login_modal  = document.getElementById("login_modal");
+
+        let term_reg = document.getElementById("reg");
+        let term_reg_modal  = document.getElementById("reg_modal");
+
+        term_reg.onclick = function () {
+          term_reg.style.background = "white";
+          term_login.style.background = "";
+           if(term_reg_modal.style.display == "none" || !term_reg_modal.style.display) {
+              term_login_modal.style.display = "none";
+              term_reg_modal.style.display = "block";
+            } else {
+              term_reg_modal.style.display = "none";
+
+              term_reg.style.background = "";
+            }
+          
+        };
+
+        term_login.onclick = function () {
+              term_login.style.background = "white";
+              term_reg.style.background = "";
+            if(term_login_modal.style.display == "none" || !term_login_modal.style.display) {
+              term_reg_modal.style.display = "none";
+              term_login_modal.style.display = "block";
+            } else {
+              term_login_modal.style.display = "none";
+              term_login.style.background = "";
+            }
+          
+        };
+
+          
+      window.onclick = function (event) {
+        // When the user clicks anywhere outside of a modal, close it
+        if (event.target.className =="modal") {
+          event.target.style.display = "none";
+        }
+
+        if(!(event.target.id == "reg" || event.target.id == "login" || event.target.parentElement == term_reg_modal || event.target.parentElement == term_login_modal
+          || event.target.parentElement.parentElement.parentElement == term_reg_modal || event.target.parentElement.parentElement.parentElement == term_login_modal)){
+          term_reg_modal.style.display = "none";
+          term_login_modal.style.display = "none";
+          term_reg.style.background = "";
+          term_login.style.background = "";
+        }
+      };
+    </script>
+    {% endif %}
+    </ul>
+
   <!--Search Bar-->
   {% if timelines is defined %}
-  <div class="search-area flex w-4/5 my-4 mx-auto lg:w-2/4 lg:mt-2  lg:pl-10 lg:h-10 pl-2  h-12 pb-2" >
+  <div style = "z-index: 5" class="search-area flex w-full my-4 mx-auto lg:pl-10 lg:h-10 pl-2 pr-4 h-12" >
     <input type="text" class="border border-grey px-3 w-full" placeholder="Search" onkeyup="searchTimelinesFilter()" id="search_timelines_input">
 
     <ul id="search_timelines_list_ul" class="search_list_ul z-10">
@@ -58,117 +176,9 @@
 
   </script>
   {% endif %}
-  <ul class="flex fixed pin-t pin-r lg:relative lg:justify-end my-4 mx-auto lg:w-1/4  h-10 pl-2">
-    <li><a href="{{ url_for('blog.index') }}">Index</a></li>
-  {% if g.user %}
-    <li><span>{{ g.user['username'] }}</span>
-    <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-  {% else %}
-      <ul id="account" class="flex w-full justify-end h-10 pl-2">
-          <li class="px-4 py-2" id="reg">Register </li>
-          <li class="px-4 py-2" id="login">Log In </li>
-      </ul>
+</div>
 
-      <div id="login_modal" style = "z-index: 100; width: 320px" class="my-10 w-full max-w-xs absolute pin-r hidden">
-          <form action="{{ url_for('auth.login') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
-              <div class="mb-4">
-                <label class="block text-grey-darker text-sm font-bold mb-2" for="usrname">
-                    Username
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="usrname" type="text" placeholder="Username" name="username">
-              </div>
-              <div class="mb-6">
-                <label class="block text-grey-darker text-sm font-bold mb-2" for="passwrd">
-                    Password
-                </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="passwrd" type="password" name="password" placeholder="******************">
-              </div>
-              <div class="flex items-center justify-between">
-                <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                    Sign In
-                </button>
-                <a class="inline-block align-baseline font-bold text-sm text-blue hover:text-blue-darker" href="#">
-                    Forgot Password?
-                </a>
-              </div>
-          </form>
-      </div>
-      <div id="reg_modal" style = "z-index: 100; width: 320px" class="my-10 w-full max-w-xs absolute pin-r hidden">
-        <form action = "{{ url_for('auth.register') }}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" method="POST">
-            <div class="mb-4">
-              <label class="block text-grey-darker text-sm font-bold mb-2" for="username">
-                  Username
-              </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
-            </div>
-            <div class="mb-6">
-              <label class="block text-grey-darker text-sm font-bold mb-2" for="password">
-                  Password
-              </label>
-              <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" placeholder="******************">
-            </div>
-            <div class="flex items-center justify-between">
-              <button class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                Register
-            </button>
-            </div>
-        </form>
-      </div>
-    </ul>
-	<script>
-      let term_modal = document.getElementById('modal-term-event');
 
-      //control the account page  
-      let term_login = document.getElementById("login");
-      let term_login_modal  = document.getElementById("login_modal");
-
-      let term_reg = document.getElementById("reg");
-      let term_reg_modal  = document.getElementById("reg_modal");
-
-      term_reg.onclick = function () {
-        term_reg.style.background = "white";
-        term_login.style.background = "";
-         if(term_reg_modal.style.display == "none" || !term_reg_modal.style.display) {
-            term_login_modal.style.display = "none";
-            term_reg_modal.style.display = "block";
-          } else {
-            term_reg_modal.style.display = "none";
-
-            term_reg.style.background = "";
-          }
-        
-      };
-
-      term_login.onclick = function () {
-            term_login.style.background = "white";
-            term_reg.style.background = "";
-          if(term_login_modal.style.display == "none" || !term_login_modal.style.display) {
-            term_reg_modal.style.display = "none";
-            term_login_modal.style.display = "block";
-          } else {
-            term_login_modal.style.display = "none";
-            term_login.style.background = "";
-          }
-        
-      };
-
-        
-	  window.onclick = function (event) {
-		  // When the user clicks anywhere outside of a modal, close it
-      if (event.target.className =="modal") {
-        event.target.style.display = "none";
-      }
-
-      if(!(event.target.id == "reg" || event.target.id == "login" || event.target.parentElement == term_reg_modal || event.target.parentElement == term_login_modal
-        || event.target.parentElement.parentElement.parentElement == term_reg_modal || event.target.parentElement.parentElement.parentElement == term_login_modal)){
-        term_reg_modal.style.display = "none";
-        term_login_modal.style.display = "none";
-        term_reg.style.background = "";
-        term_login.style.background = "";
-      }
-		};
-	</script>
-    {% endif %}
   </ul>
 </nav>
 <section class="content w-full" style="height: 80%">
